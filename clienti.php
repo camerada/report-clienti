@@ -39,15 +39,14 @@ return [
   'came'              => ['nome' => 'CAME Comunicazione', 'sito' => 'camecomunicazione.it', 'ga4' => '520232629',
                           'settore' => 'agenzia di comunicazione e siti web a Genova (sito proprio di CAME)'],
   'mauriziocamerada'  => ['nome' => 'Maurizio Camerada', 'sito' => 'mauriziocamerada.it', 'ga4' => '332423611', 'settore' => 'sito personale'],
-  'mvrantincendio'    => ['nome' => 'MVR Antincendio', 'sito' => 'mvrantincendio.it', 'ga4' => '377207095',
-                          'settore' => 'antincendio e corsi sulla sicurezza',
-                          'note' => 'In Analytics la proprietà si chiama "https://mvrantincendio.com/ - GA4": verificare che sia quella giusta.'],
+  'mvrantincendio'    => ['nome' => 'MVR Antincendio', 'sito' => 'mvrantincendio.it', 'ga4' => '344604720',
+                          'settore' => 'antincendio e corsi sulla sicurezza'],
   'edoardocamerada'   => ['nome' => 'Edoardo Camerada', 'sito' => 'edoardocamerada.it', 'ga4' => '480692589', 'settore' => 'sito personale'],
   'motoracer'         => ['nome' => 'Moto Racer Genova', 'sito' => 'motoracergenova.it', 'ga4' => '364318665', 'settore' => 'moto a Genova'],
   'ferramentagenova'  => ['nome' => 'Paradiso della Brugola', 'sito' => 'ferramentagenova.it', 'ga4' => '461834714', 'settore' => 'ferramenta a Genova'],
   'marcofirinu'       => ['nome' => 'Marco Firinu', 'sito' => 'marcofirinu.it', 'ga4' => '480296162'],
   'veleco'            => ['nome' => 'Concessionario Veleco Italia', 'sito' => 'concessionariovelecoitalia.it', 'ga4' => '546703442', 'settore' => 'concessionario di veicoli elettrici Veleco'],
-  'tuosito'           => ['nome' => 'TuoSito.si', 'sito' => 'tuosito.si', 'ga4' => '', // G-3SSSGG4FXT: manca l'ID numerico della proprietà
+  'tuosito'           => ['nome' => 'TuoSito.si', 'sito' => 'tuosito.si', 'ga4' => '556336111', // stream G-3SSSGG4FXT
                           'settore' => 'servizio online di CAME per creare siti per piccole attività (landing tuosito.si + motore vetrina.si)',
                           'note' => 'tuosito.si e vetrina.si hanno la stessa proprietà Analytics.',
                           'contatti' => ['anteprima_creata' => 'Anteprime create', 'pagamento_completato' => 'Pagamenti'],
