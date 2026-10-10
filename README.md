@@ -37,15 +37,12 @@ Se qualcosa va storto, arriva un'email «Report di … non riuscito» a CAME.
 - **Analytics**: Amministrazione → Gestione accessi all'account (o alla proprietà) → + → l'indirizzo dell'account di servizio → ruolo **Visualizzatore**.
 - **Search Console**: Impostazioni → Utenti e autorizzazioni → Aggiungi utente → stesso indirizzo → **Limitato**.
 
-### 3. Server
+### 3. Server (dal Mac, nella cartella del repo)
 ```sh
-cp strumenti.conf.esempio strumenti.conf     # sul Mac, una volta
-sh carica.sh                                 # carica il programma in ~/report-clienti
-scp ~/Downloads/<file-scaricato>.json identia:report-clienti/chiave-google.json
-ssh identia
-cd report-clienti && cp config.example.php config.php && nano config.php   # chiavi Claude e Brevo, email
-php report.php --cliente=identia --mese=2026-10                            # prova vera → email a CAME
+sh installa.sh ~/Downloads/<chiave-scaricata>.json   # programma + chiave Google + config.php (chiavi prese da vetrina.si)
+ssh identia "cd report-clienti && php report.php --cliente=identia --mese=2026-10"   # prova vera → email a CAME
 ```
+Dopo modifiche al codice: `sh carica.sh`.
 
 ### 4. Cron (hPanel → Avanzate → Cron job)
 Il 4 di ogni mese alle 8:12:
