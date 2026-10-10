@@ -50,20 +50,27 @@ function raccogli_dati(array $c, string $mese): array {
     'google' => null,
   ];
 
-  if (!empty($c['search_console'])) {
+  // Search Console: la proprietà indicata, oppure prova i formati più comuni
+  $candidati = $c['search_console'] !== '' ? [$c['search_console']]
+    : ["sc-domain:{$c['sito']}", "https://www.{$c['sito']}/", "https://{$c['sito']}/"];
+  $ultimoErrore = '';
+  foreach ($candidati as $sc) {
     try {
-      $somma = fn($dal, $al) => search_console($c['search_console'], $dal, $al, [], 1)[0] ?? ['clicks' => 0, 'impressions' => 0, 'position' => 0];
+      $somma = fn($dal, $al) => search_console($sc, $dal, $al, [], 1)[0] ?? ['clicks' => 0, 'impressions' => 0, 'position' => 0];
       $d['google'] = [
+        'proprieta' => $sc,
         'totali' => $somma($p['dal'], $p['al']),
         'totali_prima' => $somma($p['dal_prima'], $p['al_prima']),
         'ricerche' => array_map(fn($r) => ['testo' => $r['keys'][0], 'clic' => (int)$r['clicks'], 'comparse' => (int)$r['impressions'], 'posizione' => round($r['position'], 1)],
-          search_console($c['search_console'], $p['dal'], $p['al'], ['query'], 10)),
+          search_console($sc, $p['dal'], $p['al'], ['query'], 10)),
       ];
+      break;
     } catch (RuntimeException $e) {
-      // Search Console non collegata o account di servizio non autorizzato: il report esce lo stesso
-      $d['google'] = ['errore' => $e->getMessage()];
+      // proprietà inesistente o account di servizio non autorizzato: prova la prossima, il report esce comunque
+      $ultimoErrore = $e->getMessage();
     }
   }
+  if ($d['google'] === null) $d['google'] = ['errore' => $ultimoErrore];
   return $d;
 }
 

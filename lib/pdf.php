@@ -175,7 +175,7 @@ function crea_pdf(array $c, array $d, array $t, bool $esempio = false): string {
     ['Persone', $tt['activeUsers'] ?? 0, $tp['activeUsers'] ?? 0, 'hanno visitato il sito'],
     ['Visite', $tt['sessions'] ?? 0, $tp['sessions'] ?? 0, 'contando i ritorni'],
     ['Pagine lette', $tt['screenPageViews'] ?? 0, $tp['screenPageViews'] ?? 0, 'in totale'],
-    ['Contatti', $contatti, $contattiPrima, 'chiamate e messaggi'],
+    ['Contatti', $contatti, $contattiPrima, $c['nota_contatti'] ?? 'dal sito'],
   ];
   $gap = 10; $rw = ($W - 3 * $gap) / 4; $rh = 92; $y0 = $pdf->y;
   foreach ($riquadri as $i => [$nome, $ora, $prima, $nota]) {

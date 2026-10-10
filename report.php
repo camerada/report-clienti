@@ -29,7 +29,8 @@ $registro = __DIR__ . '/uscite/registro.csv';
 $errori = 0;
 
 foreach ($quali as $id) {
-  $c = $clienti[$id];
+  $c = $clienti[$id] + PREDEFINITI;
+  if (empty($c['ga4']) && !isset($opz['prova'])) { echo "$id: manca l'ID della proprietà Analytics in clienti.php, salto\n"; continue; }
   try {
     $giaInviato = is_file($registro) && preg_match('/^' . preg_quote("$id;$mese;", '/') . '.*;inviato$/m', file_get_contents($registro));
     if ($giaInviato && !isset($opz['forza']) && !isset($opz['solo-pdf']) && !isset($opz['prova'])) { echo "$id $mese: già inviato, salto (--forza per rifarlo)\n"; continue; }

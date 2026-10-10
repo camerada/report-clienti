@@ -11,7 +11,7 @@ define('MITTENTE_EMAIL', 'info@camecomunicazione.it');   // deve essere un mitte
 define('MITTENTE_NOME', 'CAME Comunicazione');
 
 // Dove arrivano le anteprime da controllare (e la copia di quelli inviati ai clienti)
-define('EMAIL_CAME', 'mcamerada@gmail.com');
+define('EMAIL_CAME', 'info@camecomunicazione.it');
 
 // Account di servizio Google (file JSON scaricato da Google Cloud), fuori dal sito
 define('CHIAVE_GOOGLE', __DIR__ . '/chiave-google.json');
