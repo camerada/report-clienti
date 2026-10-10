@@ -15,7 +15,7 @@
 if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
 date_default_timezone_set('Europe/Rome');
 require __DIR__ . '/config.php';
-foreach (['google', 'dati', 'testo', 'pdf', 'email'] as $f) require __DIR__ . "/lib/$f.php";
+foreach (['google', 'dati', 'testo', 'pdf', 'impagina', 'email'] as $f) require __DIR__ . "/lib/$f.php";
 
 $opz = getopt('', ['cliente:', 'mese:', 'tutti', 'solo-pdf', 'prova', 'forza']);
 $clienti = require __DIR__ . '/clienti.php';
@@ -36,6 +36,7 @@ foreach ($quali as $id) {
     if ($giaInviato && !isset($opz['forza']) && !isset($opz['solo-pdf']) && !isset($opz['prova'])) { echo "$id $mese: già inviato, salto (--forza per rifarlo)\n"; continue; }
 
     $d = isset($opz['prova']) ? json_decode(file_get_contents(__DIR__ . '/prova/esempio.json'), true) + ['mese' => $mese] : raccogli_dati($c, $mese);
+    $d['lavori'] = isset($opz['prova']) ? leggi_lavori_file(__DIR__ . '/prova/lavori-esempio.md') : leggi_lavori($id, $mese);
     $t = scrivi_testi($c, $d);
     $pdf = crea_pdf($c, $d, $t, isset($opz['prova']));
     $nome = "report-{$c['sito']}-$mese.pdf";
@@ -48,7 +49,7 @@ foreach ($quali as $id) {
     $meseIt = mese_italiano($mese);
     $alCliente = !empty($c['automatico']) && !empty($c['email']) && !isset($opz['prova']);
     if ($alCliente) {
-      invia_email($c['email'], "Il vostro sito a $meseIt: il report mensile", email_cliente($c, $t, $meseIt), $pdf, $nome, [EMAIL_CAME]);
+      invia_email($c['email'], "Il tuo sito a $meseIt: il report mensile", email_cliente($c, $t, $meseIt), $pdf, $nome, [EMAIL_CAME]);
       $esito = 'inviato';
     } else {
       invia_email([EMAIL_CAME], "Da controllare: report di {$c['sito']} - $meseIt", email_anteprima($c, $t, $meseIt), $pdf, $nome);
@@ -68,12 +69,12 @@ foreach ($quali as $id) {
 exit($errori ? 1 : 0);
 
 function email_cliente(array $c, array $t, string $mese): string {
-  return '<p>Buongiorno,</p><p>in allegato il report del vostro sito <b>' . htmlspecialchars($c['sito']) . "</b> per $mese.</p>"
-    . '<p><b>' . htmlspecialchars($t['titolo']) . '</b><br>' . htmlspecialchars($t['sintesi']) . '</p>'
-    . '<p>Per qualsiasi domanda rispondete pure a questa email.</p><p>CAME Comunicazione</p>';
+  return '<p>Buongiorno,</p><p>in allegato il report del tuo sito <b>' . htmlspecialchars($c['sito']) . "</b> per $mese.</p>"
+    . '<p>' . htmlspecialchars($t['in_breve']) . '</p>'
+    . '<p>Per qualsiasi domanda rispondi pure a questa email.</p><p>CAME Comunicazione</p>';
 }
 function email_anteprima(array $c, array $t, string $mese): string {
   return '<p>Report di <b>' . htmlspecialchars($c['nome']) . "</b> per $mese, da controllare.</p>"
-    . '<p><b>' . htmlspecialchars($t['titolo']) . '</b><br>' . htmlspecialchars($t['sintesi']) . '</p>'
+    . '<p>' . htmlspecialchars($t['in_breve']) . '</p>'
     . '<p>Se va bene, inoltralo al cliente. Quando i report sono sempre a posto, metti <code>automatico =&gt; true</code> e l\'email del cliente in clienti.php: dal mese dopo partono da soli.</p>';
 }

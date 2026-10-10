@@ -1,7 +1,11 @@
 # Report clienti — CAME Comunicazione
 
 Ogni mese, per ogni cliente in `clienti.php`: numeri da Google Analytics e Search Console → Claude scrive
-i testi in parole semplici → PDF di 2 pagine → email.
+i testi in parole semplici → PDF nello stile dei resoconti CAME (copertina, In breve, grafico dei 3 mesi,
+cosa ci dicono i dati, i numeri del mese, prossimi passi) → email.
+
+Lavoro fatto nel mese (facoltativo): `lavori/<cliente>/<AAAA-MM>.md`, vedi `lavori/LEGGIMI.md`.
+Caratteri (Bricolage Grotesque, Inter Tight, Space Mono, licenza OFL) e logo in `risorse/`.
 
 - `automatico => false`: il PDF arriva solo a CAME (`EMAIL_CAME`), da controllare e inoltrare a mano.
 - `automatico => true` + `email` del cliente: va direttamente al cliente, CAME in copia.

@@ -50,6 +50,17 @@ function raccogli_dati(array $c, string $mese): array {
     'google' => null,
   ];
 
+  // Andamento degli ultimi 3 mesi (per il grafico): persone e visite da Google, mese per mese
+  $inizio3 = (new DateTimeImmutable("$mese-01"))->modify('-2 months')->format('Y-m-d');
+  $mesi = [];
+  for ($i = 2; $i >= 0; $i--) $mesi[(new DateTimeImmutable("$mese-01"))->modify("-$i months")->format('Ym')] = ['persone' => 0, 'da_google' => 0];
+  foreach (ga4($prop, $inizio3, $p['al'], ['activeUsers'], ['yearMonth']) as $r) if (isset($mesi[$r['yearMonth']])) $mesi[$r['yearMonth']]['persone'] = (int)$r['activeUsers'];
+  foreach (ga4($prop, $inizio3, $p['al'], ['sessions'], ['yearMonth'], ['dimensionFilter' => ['filter' => [
+    'fieldName' => 'sessionDefaultChannelGroup', 'stringFilter' => ['value' => 'Organic Search']]]]) as $r)
+    if (isset($mesi[$r['yearMonth']])) $mesi[$r['yearMonth']]['da_google'] = (int)$r['sessions'];
+  $d['andamento'] = [];
+  foreach ($mesi as $ym => $v) $d['andamento'][] = ['mese' => substr($ym, 0, 4) . '-' . substr($ym, 4)] + $v;
+
   // Search Console: la proprietà indicata, oppure prova i formati più comuni
   $candidati = $c['search_console'] !== '' ? [$c['search_console']]
     : ["sc-domain:{$c['sito']}", "https://www.{$c['sito']}/", "https://{$c['sito']}/"];
@@ -78,4 +89,31 @@ function raccogli_dati(array $c, string $mese): array {
 function pulisci_titolo(string $t, array $c): string {
   $t = preg_split('/\s+[—|–-]\s+/u', $t)[0] ?? $t;
   return $t === '' || $t === '(not set)' ? '(senza titolo)' : $t;
+}
+
+// Lavoro fatto dall'agenzia nel mese (facoltativo): lavori/<cliente>/<AAAA-MM>.md
+//   ## Fatto            righe "Etichetta: testo"
+//   ## Ci serve da te   righe "- domanda"
+//   ## Prossimi passi   righe "Etichetta: testo"
+function leggi_lavori(string $id, string $mese): array {
+  return leggi_lavori_file(__DIR__ . "/../lavori/$id/$mese.md");
+}
+function leggi_lavori_file(string $f): array {
+  $x = ['fatto' => [], 'ci_serve' => [], 'prossimi' => []];
+  if (!is_file($f)) return $x;
+  $sezione = null;
+  foreach (file($f, FILE_IGNORE_NEW_LINES) as $riga) {
+    $riga = trim($riga);
+    if ($riga === '') continue;
+    if (str_starts_with($riga, '#')) {
+      $t = mb_strtolower($riga);
+      $sezione = str_contains($t, 'serve') ? 'ci_serve' : (str_contains($t, 'prossim') ? 'prossimi' : (str_contains($t, 'fatto') ? 'fatto' : null));
+      continue;
+    }
+    if (!$sezione) continue;
+    if ($sezione === 'ci_serve') { $x['ci_serve'][] = ltrim($riga, '-* '); continue; }
+    [$et, $testo] = str_contains($riga, ':') ? array_map('trim', explode(':', ltrim($riga, '-* '), 2)) : ['', ltrim($riga, '-* ')];
+    $x[$sezione][] = ['etichetta' => $et, 'testo' => $testo];
+  }
+  return $x;
 }

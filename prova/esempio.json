@@ -1,33 +1,196 @@
 {
-  "totali": {"activeUsers": 412, "newUsers": 351, "sessions": 538, "screenPageViews": 1243, "engagementRate": 0.61, "averageSessionDuration": 94},
-  "totali_prima": {"activeUsers": 356, "newUsers": 310, "sessions": 471, "screenPageViews": 1102, "engagementRate": 0.57, "averageSessionDuration": 88},
-  "eventi": {"clic_telefono": 23, "clic_whatsapp": 14, "generate_lead": 5, "clic_email": 2, "clic_mappa": 31, "clic_prenota": 47, "video_start": 12},
-  "eventi_prima": {"clic_telefono": 19, "clic_whatsapp": 9, "generate_lead": 6, "clic_email": 3, "clic_mappa": 24, "clic_prenota": 38, "video_start": 8},
-  "canali": [
-    {"nome": "Ricerca su Google", "visite": 271}, {"nome": "Accesso diretto", "visite": 139}, {"nome": "Social (Facebook, Instagram…)", "visite": 64},
-    {"nome": "Google Maps", "visite": 41}, {"nome": "Link da altri siti", "visite": 23}
-  ],
-  "pagine": [
-    {"titolo": "Identia", "percorso": "/", "viste": 402}, {"titolo": "Contatti", "percorso": "/contatti/", "viste": 168},
-    {"titolo": "Allineatori trasparenti a Genova", "percorso": "/servizi/allineatori-trasparenti/", "viste": 131},
-    {"titolo": "Prima visita odontoiatrica", "percorso": "/servizi/prima-visita/", "viste": 117},
-    {"titolo": "Perché sanguinano le gengive quando passo il filo", "percorso": "/blog/gengive-che-sanguinano/", "viste": 96},
-    {"titolo": "Implantologia guidata", "percorso": "/servizi/implantologia-guidata/", "viste": 84},
-    {"titolo": "Lo studio", "percorso": "/studio/", "viste": 71}
-  ],
-  "dispositivi": [{"nome": "Telefono", "visitatori": 297}, {"nome": "Computer", "visitatori": 101}, {"nome": "Tablet", "visitatori": 14}],
-  "citta": [{"nome": "Genova", "visitatori": 288}, {"nome": "Milano", "visitatori": 19}, {"nome": "Rapallo", "visitatori": 11}],
-  "google": {
-    "totali": {"clicks": 248, "impressions": 6120, "position": 14.2},
-    "totali_prima": {"clicks": 201, "impressions": 4870, "position": 16.8},
-    "ricerche": [
-      {"testo": "identia genova", "clic": 64, "comparse": 210, "posizione": 1.2},
-      {"testo": "dentista piazza cavour genova", "clic": 31, "comparse": 420, "posizione": 3.4},
-      {"testo": "d'urso dentista genova", "clic": 27, "comparse": 98, "posizione": 1.5},
-      {"testo": "allineatori trasparenti genova", "clic": 12, "comparse": 610, "posizione": 9.8},
-      {"testo": "gengive che sanguinano col filo", "clic": 9, "comparse": 880, "posizione": 11.2},
-      {"testo": "dentista genova centro", "clic": 7, "comparse": 1150, "posizione": 18.4},
-      {"testo": "impianti dentali guidati genova", "clic": 5, "comparse": 230, "posizione": 7.9}
-    ]
+ "totali": {
+  "activeUsers": 412,
+  "newUsers": 351,
+  "sessions": 538,
+  "screenPageViews": 1243,
+  "engagementRate": 0.61,
+  "averageSessionDuration": 94
+ },
+ "totali_prima": {
+  "activeUsers": 356,
+  "newUsers": 310,
+  "sessions": 471,
+  "screenPageViews": 1102,
+  "engagementRate": 0.57,
+  "averageSessionDuration": 88
+ },
+ "eventi": {
+  "clic_telefono": 23,
+  "clic_whatsapp": 14,
+  "generate_lead": 5,
+  "clic_email": 2,
+  "clic_mappa": 31,
+  "clic_prenota": 47,
+  "video_start": 12
+ },
+ "eventi_prima": {
+  "clic_telefono": 19,
+  "clic_whatsapp": 9,
+  "generate_lead": 6,
+  "clic_email": 3,
+  "clic_mappa": 24,
+  "clic_prenota": 38,
+  "video_start": 8
+ },
+ "canali": [
+  {
+   "nome": "Ricerca su Google",
+   "visite": 271
+  },
+  {
+   "nome": "Accesso diretto",
+   "visite": 139
+  },
+  {
+   "nome": "Social (Facebook, Instagram…)",
+   "visite": 64
+  },
+  {
+   "nome": "Google Maps",
+   "visite": 41
+  },
+  {
+   "nome": "Link da altri siti",
+   "visite": 23
   }
+ ],
+ "pagine": [
+  {
+   "titolo": "Identia",
+   "percorso": "/",
+   "viste": 402
+  },
+  {
+   "titolo": "Contatti",
+   "percorso": "/contatti/",
+   "viste": 168
+  },
+  {
+   "titolo": "Allineatori trasparenti a Genova",
+   "percorso": "/servizi/allineatori-trasparenti/",
+   "viste": 131
+  },
+  {
+   "titolo": "Prima visita odontoiatrica",
+   "percorso": "/servizi/prima-visita/",
+   "viste": 117
+  },
+  {
+   "titolo": "Perché sanguinano le gengive quando passo il filo",
+   "percorso": "/blog/gengive-che-sanguinano/",
+   "viste": 96
+  },
+  {
+   "titolo": "Implantologia guidata",
+   "percorso": "/servizi/implantologia-guidata/",
+   "viste": 84
+  },
+  {
+   "titolo": "Lo studio",
+   "percorso": "/studio/",
+   "viste": 71
+  }
+ ],
+ "dispositivi": [
+  {
+   "nome": "Telefono",
+   "visitatori": 297
+  },
+  {
+   "nome": "Computer",
+   "visitatori": 101
+  },
+  {
+   "nome": "Tablet",
+   "visitatori": 14
+  }
+ ],
+ "citta": [
+  {
+   "nome": "Genova",
+   "visitatori": 288
+  },
+  {
+   "nome": "Milano",
+   "visitatori": 19
+  },
+  {
+   "nome": "Rapallo",
+   "visitatori": 11
+  }
+ ],
+ "google": {
+  "totali": {
+   "clicks": 248,
+   "impressions": 6120,
+   "position": 14.2
+  },
+  "totali_prima": {
+   "clicks": 201,
+   "impressions": 4870,
+   "position": 16.8
+  },
+  "ricerche": [
+   {
+    "testo": "identia genova",
+    "clic": 64,
+    "comparse": 210,
+    "posizione": 1.2
+   },
+   {
+    "testo": "dentista piazza cavour genova",
+    "clic": 31,
+    "comparse": 420,
+    "posizione": 3.4
+   },
+   {
+    "testo": "d'urso dentista genova",
+    "clic": 27,
+    "comparse": 98,
+    "posizione": 1.5
+   },
+   {
+    "testo": "allineatori trasparenti genova",
+    "clic": 12,
+    "comparse": 610,
+    "posizione": 9.8
+   },
+   {
+    "testo": "gengive che sanguinano col filo",
+    "clic": 9,
+    "comparse": 880,
+    "posizione": 11.2
+   },
+   {
+    "testo": "dentista genova centro",
+    "clic": 7,
+    "comparse": 1150,
+    "posizione": 18.4
+   },
+   {
+    "testo": "impianti dentali guidati genova",
+    "clic": 5,
+    "comparse": 230,
+    "posizione": 7.9
+   }
+  ]
+ },
+ "andamento": [
+  {
+   "mese": "2026-07",
+   "persone": 298,
+   "da_google": 121
+  },
+  {
+   "mese": "2026-08",
+   "persone": 356,
+   "da_google": 201
+  },
+  {
+   "mese": "2026-09",
+   "persone": 412,
+   "da_google": 271
+  }
+ ]
 }

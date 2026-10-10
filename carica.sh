@@ -7,7 +7,7 @@ RADICE=$(cd "$(dirname "$0")" && pwd)
 . "$RADICE/strumenti.conf"
 : "${SSH_ALIAS:?SSH_ALIAS mancante in strumenti.conf}" "${CARTELLA:=report-clienti}"
 cd "$RADICE"
-FILE=$(ls report.php clienti.php config.example.php lib/*.php)
+FILE=$(ls report.php clienti.php config.example.php lib/*.php risorse/* $(find lavori -type f 2>/dev/null))
 echo "Carico su $SSH_ALIAS:~/$CARTELLA :"; echo "$FILE"
 printf "Procedo? [s/N] "; read -r ok
 [ "$ok" = "s" ] || [ "$ok" = "S" ] || { echo "Annullato."; exit 0; }

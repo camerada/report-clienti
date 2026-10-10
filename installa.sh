@@ -12,7 +12,7 @@ RADICE=$(cd "$(dirname "$0")" && pwd)
 . "$RADICE/strumenti.conf"
 : "${CARTELLA:=report-clienti}"
 cd "$RADICE"
-COPYFILE_DISABLE=1 tar -cf - report.php clienti.php config.example.php lib/*.php | ssh "$SSH_ALIAS" "mkdir -p ~/$CARTELLA && cd ~/$CARTELLA && tar -xmf -"
+COPYFILE_DISABLE=1 tar -cf - report.php clienti.php config.example.php lib/*.php risorse/* | ssh "$SSH_ALIAS" "mkdir -p ~/$CARTELLA && cd ~/$CARTELLA && tar -xmf -"
 ssh "$SSH_ALIAS" "cat > ~/$CARTELLA/chiave-google.json && chmod 600 ~/$CARTELLA/chiave-google.json" < "$1"
 ssh "$SSH_ALIAS" "cd ~/$CARTELLA && if [ -f config.php ]; then echo 'config.php esiste già: non lo tocco.'; else
   cp config.example.php config.php && chmod 600 config.php

@@ -5,18 +5,28 @@
 const SCHEMA_TESTI = [
   'type' => 'object',
   'properties' => [
-    'titolo'          => ['type' => 'string', 'description' => 'Frase breve che riassume il mese, max 70 caratteri'],
-    'sintesi'         => ['type' => 'string', 'description' => '3-4 frasi: com\'è andato il mese, in parole semplici'],
-    'bene'            => ['type' => 'array', 'items' => ['type' => 'string'], 'description' => '2-3 cose andate bene, una frase ciascuna'],
-    'migliorare'      => ['type' => 'array', 'items' => ['type' => 'string'], 'description' => '1-3 cose da migliorare o da tenere d\'occhio'],
-    'consiglio'       => ['type' => 'string', 'description' => 'Un consiglio pratico per il mese prossimo, 2-3 frasi'],
-    'nota_visite'     => ['type' => 'string', 'description' => 'Commento di 1-2 frasi sui visitatori'],
-    'nota_provenienza'=> ['type' => 'string', 'description' => 'Commento di 1-2 frasi su da dove arrivano le visite'],
-    'nota_pagine'     => ['type' => 'string', 'description' => 'Commento di 1-2 frasi sulle pagine più lette'],
-    'nota_contatti'   => ['type' => 'string', 'description' => 'Commento di 1-2 frasi sui contatti'],
-    'nota_google'     => ['type' => 'string', 'description' => 'Commento di 1-2 frasi sulle ricerche su Google; stringa vuota se non ci sono dati'],
+    'in_breve'        => ['type' => 'string', 'description' => '3-4 frasi: com\'è andato il mese e cosa conta, in parole semplici'],
+    'kpi'             => ['type' => 'array', 'description' => 'Esattamente 3 numeri chiave del mese presi dai dati, i più significativi',
+      'items' => ['type' => 'object', 'properties' => [
+        'valore' => ['type' => 'string', 'description' => 'Il numero com\'è da mostrare, es. "412" oppure "15 + 13". Solo cifre, punti delle migliaia e +'],
+        'spiegazione' => ['type' => 'string', 'description' => 'Cosa misura, max 12 parole, es. "persone che hanno visitato il sito"'],
+      ], 'required' => ['valore', 'spiegazione'], 'additionalProperties' => false]],
+    'nota_grafico'    => ['type' => 'string', 'description' => '1-2 frasi sotto il grafico dei 3 mesi: cosa si vede. Se un mese è parziale o senza dati, dillo'],
+    'scoperte'        => ['type' => 'array', 'description' => 'Da 3 a 5 cose utili che dicono i dati, dalla più importante',
+      'items' => ['type' => 'object', 'properties' => [
+        'titolo' => ['type' => 'string', 'description' => 'Frase breve, max 8 parole'],
+        'testo'  => ['type' => 'string', 'description' => '2-3 frasi con i numeri e cosa significano per l\'attività'],
+      ], 'required' => ['titolo', 'testo'], 'additionalProperties' => false]],
+    'prossimi_passi'  => ['type' => 'array', 'description' => 'Da 2 a 3 azioni concrete per il mese prossimo',
+      'items' => ['type' => 'object', 'properties' => [
+        'etichetta' => ['type' => 'string', 'description' => 'Max 3 parole, es. "Scheda Google"'],
+        'testo'     => ['type' => 'string', 'description' => '1-2 frasi'],
+      ], 'required' => ['etichetta', 'testo'], 'additionalProperties' => false]],
+    'nota_provenienza'=> ['type' => 'string', 'description' => '1-2 frasi su da dove arrivano le visite'],
+    'nota_pagine'     => ['type' => 'string', 'description' => '1-2 frasi sulle pagine più lette'],
+    'nota_google'     => ['type' => 'string', 'description' => '1-2 frasi sulle ricerche su Google; stringa vuota se non ci sono dati'],
   ],
-  'required' => ['titolo', 'sintesi', 'bene', 'migliorare', 'consiglio', 'nota_visite', 'nota_provenienza', 'nota_pagine', 'nota_contatti', 'nota_google'],
+  'required' => ['in_breve', 'kpi', 'nota_grafico', 'scoperte', 'prossimi_passi', 'nota_provenienza', 'nota_pagine', 'nota_google'],
   'additionalProperties' => false,
 ];
 
@@ -26,7 +36,7 @@ function scrivi_testi(array $c, array $d): array {
 Scrivi il report mensile del sito web di un'attività, per conto di CAME Comunicazione, l'agenzia che lo gestisce.
 Lo legge il titolare: non è un esperto di internet. Scrivi in italiano semplice, frasi brevi, niente termini tecnici
 (non "sessioni", "bounce", "engagement", "traffico organico": di' "visite", "persone", "ricerche su Google").
-Rivolgiti all'attività con il voi ("il vostro sito", "vi hanno chiamato").
+Dai del tu al titolare ("il tuo sito", "ti hanno chiamato", "ti trova"). Parla a nome dell'agenzia con il noi ("abbiamo fatto").
 
 Regole:
 - Usa solo i numeri che ti do. Non inventare dati, cause o confronti che non ci sono.
@@ -34,12 +44,17 @@ Regole:
 - Sii onesto: se un numero è basso o in calo, dillo con calma e spiega cosa si può fare.
 - Numeri piccoli (sotto 30) non sono una tendenza: non trarre conclusioni forti.
 - Analytics conta solo i visitatori che accettano i cookie: i numeri veri sono più alti. Ricordalo al massimo una volta, se serve.
+- Se ti do il lavoro fatto dall'agenzia nel mese, collegalo ai dati quando c'è un legame vero; non ripeterlo per intero.
+- Se ti do i prossimi passi già decisi dall'agenzia, includili per primi nei prossimi_passi con parole tue, poi aggiungi i tuoi se c'è posto.
 - I consigli devono essere cose concrete che l'attività o l'agenzia possono fare (es. un articolo su un tema cercato, aggiornare la scheda Google, chiedere recensioni).
 - Niente emoji, niente punti esclamativi, niente toni da venditore.
 TXT;
   $utente = "Attività: {$c['nome']} — sito {$c['sito']}\nSettore: {$c['settore']}\n"
     . (!empty($c['note']) ? "Note: {$c['note']}\n" : '')
-    . "Mese del report: $mese\n\nNumeri (JSON):\n" . json_encode(dati_per_claude($c, $d), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    . "Mese del report: $mese\n"
+    . (!empty($d['lavori']['fatto']) ? "\nLavoro fatto da CAME nel mese:\n" . implode("\n", array_map(fn($l) => "- {$l['etichetta']}: {$l['testo']}", $d['lavori']['fatto'])) . "\n" : '')
+    . (!empty($d['lavori']['prossimi']) ? "\nProssimi passi già decisi:\n" . implode("\n", array_map(fn($l) => "- {$l['etichetta']}: {$l['testo']}", $d['lavori']['prossimi'])) . "\n" : '')
+    . "\nNumeri (JSON):\n" . json_encode(dati_per_claude($c, $d), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
   $corpo = [
     'model' => MODELLO,
@@ -93,6 +108,7 @@ function dati_per_claude(array $c, array $d): array {
     'pagine_piu_lette' => array_map(fn($p) => ['pagina' => $p['titolo'], 'indirizzo' => $p['percorso'], 'viste' => $p['viste']], $d['pagine']),
     'dispositivi' => $d['dispositivi'],
     'citta' => $d['citta'],
+    'andamento_ultimi_3_mesi' => array_map(fn($a) => ['mese' => mese_italiano($a['mese']), 'persone' => $a['persone'], 'visite_da_google' => $a['da_google']], $d['andamento'] ?? []),
   ];
   foreach ($c['contatti'] ?? [] as $k => $nome) $x['contatti'][$nome] = voce($d['eventi'][$k] ?? 0, $d['eventi_prima'][$k] ?? 0);
   foreach ($c['altri_eventi'] ?? [] as $k => $nome) $x['altre_azioni'][$nome] = voce($d['eventi'][$k] ?? 0, $d['eventi_prima'][$k] ?? 0);

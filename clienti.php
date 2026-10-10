@@ -6,7 +6,7 @@
  * search_console vuoto = prova da solo 'sc-domain:sito', poi https://www.sito/ e https://sito/
  * email          a chi va il report quando 'automatico' è true
  * automatico     false = arriva solo a CAME (EMAIL_CAME), da controllare; true = al cliente con CAME in copia
- * colore         colore principale del PDF (#RRGGBB)
+ * referente      nome sulla copertina («Preparato per …»), facoltativo
  * contatti       eventi di Analytics che contano come contatto => nome nel report
  * altri_eventi   altre azioni da mostrare
  * settore, note  aiutano Claude a dare consigli adatti (più sono precisi, meglio è)
@@ -15,7 +15,7 @@ const PREDEFINITI = [
   'search_console' => '',
   'email'          => [],
   'automatico'     => false,
-  'colore'         => '#2F3A56',
+  'referente'      => '',
   'nota_contatti'  => 'moduli inviati',
   // Eventi che Google misura da solo (misurazione avanzata), senza codice sul sito
   'contatti'       => ['form_submit' => 'Moduli inviati'],
@@ -27,7 +27,7 @@ const PREDEFINITI = [
 return [
   'identia' => [
     'nome' => 'Identia — Studio Odontoiatrico D\'Urso', 'sito' => 'identia.it', 'ga4' => '549671189',
-    'colore' => '#3B4A75',
+    'referente' => 'Dott. Maurizio D\'Urso',
     'settore' => 'studio dentistico a Genova (Piazza Cavour), un solo professionista',
     'nota_contatti' => 'chiamate e messaggi',
     'contatti' => ['clic_telefono' => 'Telefonate dal sito', 'clic_whatsapp' => 'Messaggi WhatsApp', 'generate_lead' => 'Richieste dal modulo', 'clic_email' => 'Email'],
@@ -45,7 +45,7 @@ return [
   'motoracer'         => ['nome' => 'Moto Racer Genova', 'sito' => 'motoracergenova.it', 'ga4' => '364318665', 'settore' => 'moto a Genova'],
   'ferramentagenova'  => ['nome' => 'Paradiso della Brugola', 'sito' => 'ferramentagenova.it', 'ga4' => '461834714', 'settore' => 'ferramenta a Genova'],
   'marcofirinu'       => ['nome' => 'Marco Firinu', 'sito' => 'marcofirinu.it', 'ga4' => '480296162'],
-  'veleco'            => ['nome' => 'Concessionario Veleco Italia', 'sito' => 'concessionariovelecoitalia.it', 'ga4' => '546703442', 'settore' => 'concessionario di veicoli elettrici Veleco'],
+  'veleco'            => ['nome' => 'Concessionario Veleco Italia', 'referente' => 'Valentina Colomba', 'sito' => 'concessionariovelecoitalia.it', 'ga4' => '546703442', 'settore' => 'concessionario di veicoli elettrici Veleco'],
   'tuosito'           => ['nome' => 'TuoSito.si', 'sito' => 'tuosito.si', 'ga4' => '556336111', // stream G-3SSSGG4FXT
                           'settore' => 'servizio online di CAME per creare siti per piccole attività (landing tuosito.si + motore vetrina.si)',
                           'note' => 'tuosito.si e vetrina.si hanno la stessa proprietà Analytics.',
