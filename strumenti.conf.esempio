@@ -1,0 +1,3 @@
+# Copia in strumenti.conf (resta sul Mac). Stesso server Hostinger di identia.it.
+SSH_ALIAS=identia
+CARTELLA=report-clienti        # nella home del server, FUORI dai siti (non raggiungibile dal web)

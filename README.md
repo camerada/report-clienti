@@ -1,0 +1,61 @@
+# Report clienti — CAME Comunicazione
+
+Ogni mese, per ogni cliente in `clienti.php`: numeri da Google Analytics e Search Console → Claude scrive
+i testi in parole semplici → PDF di 2 pagine → email.
+
+- `automatico => false`: il PDF arriva solo a CAME (`EMAIL_CAME`), da controllare e inoltrare a mano.
+- `automatico => true` + `email` del cliente: va direttamente al cliente, CAME in copia.
+
+Gira sul server Hostinger (stesso account di identia.it) nella cartella `~/report-clienti`, fuori dai siti.
+Un cron lo lancia il 4 di ogni mese (Search Console ha 2-3 giorni di ritardo sui dati).
+
+Esempio con dati finti: `prova/esempio-identia.pdf`.
+
+## Comandi
+
+```sh
+php report.php --cliente=identia                  # mese scorso → anteprima a CAME
+php report.php --cliente=identia --mese=2026-10   # un mese preciso
+php report.php --cliente=identia --solo-pdf       # solo il PDF in uscite/, niente email
+php report.php --tutti                            # tutti i clienti (lo usa il cron)
+php report.php --cliente=identia --prova          # dati finti, per provare l'impaginazione
+```
+
+Un report già inviato al cliente non riparte due volte (`uscite/registro.csv`); `--forza` per rifarlo.
+Se qualcosa va storto, arriva un'email «Report di … non riuscito» a CAME.
+
+## Messa in funzione (una volta sola)
+
+### 1. Account di servizio Google (legge Analytics e Search Console)
+1. https://console.cloud.google.com → nuovo progetto «report-clienti».
+2. «API e servizi» → «Abilita API»: **Google Analytics Data API** e **Google Search Console API**.
+3. «IAM e amministrazione» → «Account di servizio» → Crea («report-clienti») → nessun ruolo → Fine.
+4. Apri l'account → «Chiavi» → Aggiungi chiave → JSON: si scarica un file. È una password: non va su GitHub né per email.
+5. Copia l'indirizzo dell'account (tipo `report-clienti@….iam.gserviceaccount.com`).
+
+### 2. Dare accesso, per ogni cliente
+- **Analytics**: Amministrazione → Gestione accessi all'account (o alla proprietà) → + → l'indirizzo dell'account di servizio → ruolo **Visualizzatore**.
+- **Search Console**: Impostazioni → Utenti e autorizzazioni → Aggiungi utente → stesso indirizzo → **Limitato**.
+
+### 3. Server
+```sh
+cp strumenti.conf.esempio strumenti.conf     # sul Mac, una volta
+sh carica.sh                                 # carica il programma in ~/report-clienti
+scp ~/Downloads/<file-scaricato>.json identia:report-clienti/chiave-google.json
+ssh identia
+cd report-clienti && cp config.example.php config.php && nano config.php   # chiavi Claude e Brevo, email
+php report.php --cliente=identia --mese=2026-10                            # prova vera → email a CAME
+```
+
+### 4. Cron (hPanel → Avanzate → Cron job)
+Il 4 di ogni mese alle 8:12:
+```
+12 8 4 * * /usr/bin/php /home/<utente>/report-clienti/report.php --tutti
+```
+
+## Aggiungere un cliente
+Copia il blocco `identia` in `clienti.php`, cambia ID Analytics, Search Console, colore, eventi di contatto
+e note; dai accesso all'account di servizio (punto 2); `sh carica.sh`.
+
+## Costi
+Claude: una chiamata per report, pochi centesimi (`claude-opus-5-5`, sforzo medio). Google: gratis. Brevo: 1 email.
