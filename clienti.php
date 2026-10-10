@@ -53,6 +53,14 @@ return [
                           'altri_eventi' => ['clic_crea_sito' => 'Clic su «Crea il tuo sito»', 'form_iniziato' => 'Moduli iniziati', 'codice_chiesto' => 'Codici email chiesti', 'attivazione_aperta' => 'Pagine di attivazione aperte'],
                           'nota_contatti' => 'anteprime create'],
   'supzena'           => ['nome' => 'SUP Zena', 'sito' => 'supzena.it', 'ga4' => '343925367', 'settore' => 'corsi di stand up paddle (SUP) a Genova'],
-  'recruitingagenti'  => ['nome' => 'Recruiting agenti', 'sito' => 'recruitingagenti.camecomunicazione.it', 'ga4' => ''], // proprietà da trovare
-  'dojotalentcheck'   => ['nome' => 'Dojo Talent Check', 'sito' => 'dojotalentcheck.camecomunicazione.it', 'ga4' => ''], // proprietà da trovare
+  // Percorso di selezione agenti Dojo: landing recruitingagenti → test dojotalentcheck.
+  // Niente Analytics: legge il contatore senza cookie e i test dal database del test (solo totali).
+  'recruiting'        => ['nome' => 'Selezione agenti Dojo', 'sito' => 'recruitingagenti.camecomunicazione.it',
+                          'db_config' => getenv('HOME') . '/domains/camecomunicazione.it/public_html/dojotalentcheck/config.php',
+                          'nota_contatti' => 'test completati',
+                          'settore' => 'selezione di venditori con Partita IVA per la rete commerciale Dojo (terminali POS): '
+                                     . 'una pagina che convince (recruitingagenti) e un test di 24 domande (dojotalentcheck). '
+                                     . 'Il report è interno, per CAME: Maurizio Camerada legge ogni risultato.',
+                          'note' => 'Le fonti sono i valori di ?fonte= nei link delle campagne (es. linkedin, facebook, passaparola). '
+                                  . 'Conta di più quanti test completati e idonei porta una fonte, non le visite. Non nominare mai singoli candidati.'],
 ];

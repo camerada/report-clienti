@@ -94,7 +94,7 @@ function crea_pdf(array $c, array $d, array $t, bool $esempio = false): string {
     $y0 = $p->y;
     $p->rett(M, $y0, W, $gh, FONDO2, 8);
     $p->bordo(M, $y0, W, $gh, LINEA, 8);
-    $p->testo(M + 20, $y0 + 30, 'Persone sul sito, mese per mese', 'grassetto', 11.5, INCHIOSTRO);
+    $p->testo(M + 20, $y0 + 30, $d['grafico_titolo'] ?? 'Persone sul sito, mese per mese', 'grassetto', 11.5, INCHIOSTRO);
     $max = max(1, ...array_column($and, 'persone'));
     $base = $y0 + 168; $hMax = 105; $bw = 110; $passo = (W - 40) / count($and);
     $p->linea(M + 20, $base, M + W - 20, $base, INCHIOSTRO, 0.8);
@@ -121,7 +121,7 @@ function crea_pdf(array $c, array $d, array $t, bool $esempio = false): string {
 
   // ── Cosa ci dicono i dati
   $p->nuovaPagina();
-  titolo_sezione($p, 'Cosa ci dicono i dati', 'Abbiamo letto i dati di Google di ' . explode(' ', $mese)[0] . '. Ecco le cose più utili per te.');
+  titolo_sezione($p, 'Cosa ci dicono i dati', 'Abbiamo letto i dati ' . ($d['fonte_dati'] ?? 'di Google') . ' di ' . explode(' ', $mese)[0] . '. Ecco le cose più utili per te.');
   foreach ($t['scoperte'] as $i => $s) {
     $h = 20 + Pdf::altezza($s['testo'], W - 36, 'testo', 10) + 22;
     $p->spazio($h);
@@ -136,14 +136,14 @@ function crea_pdf(array $c, array $d, array $t, bool $esempio = false): string {
   // ── I numeri del mese
   $p->nuovaPagina();
   titolo_sezione($p, 'I numeri del mese');
-  $barre = function (string $tit, string $nota, array $voci, string $et, string $val, bool $percento) use ($p) {
+  $barre = function (string $tit, string $nota, array $voci, string $et, string $val, bool $percento, ?float $base = null) use ($p) {
     if (!$voci) return;
     $p->spazio(60);
     $p->testo(M, $p->y + 12, $tit, 'grassetto', 11.5, INCHIOSTRO);
     $p->y += 18;
     if ($nota !== '') $p->paragrafo($nota, M, W, 'testo', 9, SECONDARIO, 1.45);
     $p->y += 6;
-    $max = max(1, ...array_column($voci, $val)); $tot = array_sum(array_column($voci, $val)) ?: 1;
+    $max = max(1, ...array_column($voci, $val)); $tot = $base ?: (array_sum(array_column($voci, $val)) ?: 1);
     $wEt = 190; $wBar = W - $wEt - 80;
     foreach ($voci as $v) {
       $p->spazio(20);
@@ -157,38 +157,57 @@ function crea_pdf(array $c, array $d, array $t, bool $esempio = false): string {
     }
     $p->y += 14;
   };
-  $barre('Da dove arrivano le visite', $t['nota_provenienza'], $d['canali'], 'nome', 'visite', true);
-  $barre('Le pagine più lette', $t['nota_pagine'], array_slice($d['pagine'], 0, 5), 'titolo', 'viste', false);
-
-  // Contatti e azioni
-  $righe = [];
-  foreach ($c['contatti'] ?? [] as $k => $n) $righe[] = [$n, $d['eventi'][$k] ?? 0, $d['eventi_prima'][$k] ?? 0];
-  foreach ($c['altri_eventi'] ?? [] as $k => $n) $righe[] = [$n, $d['eventi'][$k] ?? 0, $d['eventi_prima'][$k] ?? 0];
-  $tabella = function (string $tit, string $nota, array $intest, array $righe) use ($p) {
+  // tabella con N colonne di numeri a destra (la prima in evidenza)
+  $tabella = function (string $tit, string $nota, array $intest, array $righe, int $evidenza = 0) use ($p) {
     if (!$righe) return;
     $p->spazio(70);
     $p->testo(M, $p->y + 12, $tit, 'grassetto', 11.5, INCHIOSTRO);
     $p->y += 18;
     if ($nota !== '') $p->paragrafo($nota, M, W, 'testo', 9, SECONDARIO, 1.45);
     $p->y += 4;
-    $p->testo(M + W - 100, $p->y + 10, $intest[0], 'mono', 7.5, TENUE, 'd');
-    $p->testo(M + W, $p->y + 10, $intest[1], 'mono', 7.5, TENUE, 'd');
+    $col = 90; $n = count($intest);
+    foreach ($intest as $i => $t) $p->testo(M + W - ($n - 1 - $i) * $col, $p->y + 10, $t, 'mono', 7.5, TENUE, 'd');
     $p->y += 16;
-    foreach ($righe as [$n, $a, $b]) {
+    foreach ($righe as $r) {
       $p->spazio(19);
       $p->linea(M, $p->y, M + W, $p->y, LINEA);
-      $p->testo(M, $p->y + 13, $n, 'testo', 9.5, INCHIOSTRO);
-      $p->testo(M + W - 100, $p->y + 13, is_numeric($a) ? numero($a) : $a, 'mono2', 9, PETROLIO, 'd');
-      $p->testo(M + W, $p->y + 13, is_numeric($b) ? numero($b) : $b, 'mono', 9, SECONDARIO, 'd');
+      $p->testo(M, $p->y + 13, $r[0], 'testo', 9.5, INCHIOSTRO);
+      for ($i = 0; $i < $n; $i++) {
+        $v = $r[$i + 1] ?? '';
+        $p->testo(M + W - ($n - 1 - $i) * $col, $p->y + 13, is_numeric($v) ? numero($v) : $v, $i === $evidenza ? 'mono2' : 'mono', 9, $i === $evidenza ? PETROLIO : SECONDARIO, 'd');
+      }
       $p->y += 19;
     }
     $p->linea(M, $p->y, M + W, $p->y, LINEA);
     $p->y += 22;
   };
-  $tabella('Come ti hanno contattato dal sito', '', ['questo mese', 'mese prima'], $righe);
-  if (!empty($d['google']['ricerche'])) {
-    $tabella('Cosa cercano su Google per trovarti', $t['nota_google'], ['volte che compari', 'clic sul sito'],
-      array_map(fn($r) => ['«' . $r['testo'] . '»', $r['comparse'], $r['clic']], array_slice($d['google']['ricerche'], 0, 6)));
+
+  if (($d['tipo'] ?? '') === 'imbuto') {
+    // Percorso di selezione: landing → clic → test completati, per fonte
+    $tabella('Il percorso, fonte per fonte', $t['nota_provenienza'], ['visite', 'clic sul test', 'test completati'],
+      array_map(fn($f) => [$f['nome'], $f['visite'], $f['click'], $f['test']], $d['fonti']), 2);
+    $e = $d['esiti'];
+    $barre('Esito dei test', $t['nota_pagine'], array_values(array_filter([
+      ['nome' => 'Agente diretto', 'n' => $e['agente']], ['nome' => 'Segnalatore', 'n' => $e['segnalatore']],
+      ['nome' => 'Non idoneo', 'n' => $e['non_idoneo']], ['nome' => 'di cui senza Partita IVA', 'n' => $e['senza_piva']],
+    ], fn($x) => $x['nome'] !== 'di cui senza Partita IVA' || $x['n'] > 0)), 'nome', 'n', true, max(1, $d['totali']['test']));
+    $tabella('Confronto con il mese prima', '', ['questo mese', 'mese prima'], [
+      ['Visite alla pagina', $d['totali']['visite'], $d['totali_prima']['visite']],
+      ['Clic su «Dimostralo»', $d['totali']['click'], $d['totali_prima']['click']],
+      ['Test completati', $d['totali']['test'], $d['totali_prima']['test']],
+      ['Punteggio medio (su 100)', $d['totali']['punteggio'], $d['totali_prima']['punteggio']],
+    ]);
+  } else {
+    $barre('Da dove arrivano le visite', $t['nota_provenienza'], $d['canali'], 'nome', 'visite', true);
+    $barre('Le pagine più lette', $t['nota_pagine'], array_slice($d['pagine'], 0, 5), 'titolo', 'viste', false);
+    $righe = [];
+    foreach ($c['contatti'] ?? [] as $k => $n) $righe[] = [$n, $d['eventi'][$k] ?? 0, $d['eventi_prima'][$k] ?? 0];
+    foreach ($c['altri_eventi'] ?? [] as $k => $n) $righe[] = [$n, $d['eventi'][$k] ?? 0, $d['eventi_prima'][$k] ?? 0];
+    $tabella('Come ti hanno contattato dal sito', '', ['questo mese', 'mese prima'], $righe);
+    if (!empty($d['google']['ricerche'])) {
+      $tabella('Cosa cercano su Google per trovarti', $t['nota_google'], ['volte che compari', 'clic sul sito'],
+        array_map(fn($r) => ['«' . $r['testo'] . '»', $r['comparse'], $r['clic']], array_slice($d['google']['ricerche'], 0, 6)));
+    }
   }
 
   // ── Cosa ci serve da te / prossimi passi / firma

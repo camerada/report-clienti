@@ -15,7 +15,7 @@
 if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
 date_default_timezone_set('Europe/Rome');
 require __DIR__ . '/config.php';
-foreach (['google', 'dati', 'testo', 'pdf', 'impagina', 'email'] as $f) require __DIR__ . "/lib/$f.php";
+foreach (['google', 'dati', 'imbuto', 'testo', 'pdf', 'impagina', 'email'] as $f) require __DIR__ . "/lib/$f.php";
 
 $opz = getopt('', ['cliente:', 'mese:', 'tutti', 'solo-pdf', 'prova', 'forza']);
 $clienti = require __DIR__ . '/clienti.php';
@@ -30,12 +30,13 @@ $errori = 0;
 
 foreach ($quali as $id) {
   $c = $clienti[$id] + PREDEFINITI;
-  if (empty($c['ga4']) && !isset($opz['prova'])) { echo "$id: manca l'ID della proprietà Analytics in clienti.php, salto\n"; continue; }
+  if (empty($c['ga4']) && empty($c['db_config']) && !isset($opz['prova'])) { echo "$id: manca l'ID della proprietà Analytics in clienti.php, salto\n"; continue; }
   try {
     $giaInviato = is_file($registro) && preg_match('/^' . preg_quote("$id;$mese;", '/') . '.*;inviato$/m', file_get_contents($registro));
     if ($giaInviato && !isset($opz['forza']) && !isset($opz['solo-pdf']) && !isset($opz['prova'])) { echo "$id $mese: già inviato, salto (--forza per rifarlo)\n"; continue; }
 
-    $d = isset($opz['prova']) ? json_decode(file_get_contents(__DIR__ . '/prova/esempio.json'), true) + ['mese' => $mese] : raccogli_dati($c, $mese);
+    $d = isset($opz['prova']) ? json_decode(file_get_contents(__DIR__ . (empty($c['db_config']) ? '/prova/esempio.json' : '/prova/esempio-imbuto.json')), true) + ['mese' => $mese]
+      : (empty($c['db_config']) ? raccogli_dati($c, $mese) : raccogli_imbuto($c, $mese));
     $d['lavori'] = isset($opz['prova']) ? leggi_lavori_file(__DIR__ . '/prova/lavori-esempio.md') : leggi_lavori($id, $mese);
     $t = scrivi_testi($c, $d);
     $pdf = crea_pdf($c, $d, $t, isset($opz['prova']));

@@ -1,0 +1,14 @@
+{
+ "tipo": "imbuto", "grafico_titolo": "Test completati, mese per mese", "fonte_dati": "della pagina e del test",
+ "totali": {"visite": 640, "click": 118, "test": 41, "punteggio": 63, "agente": 9, "segnalatore": 17, "non_idoneo": 15},
+ "totali_prima": {"visite": 410, "click": 77, "test": 26, "punteggio": 60, "agente": 5, "segnalatore": 10, "non_idoneo": 11},
+ "fonti": [
+  {"nome": "linkedin", "visite": 290, "click": 61, "test": 22, "idonei": 17},
+  {"nome": "facebook", "visite": 248, "click": 38, "test": 11, "idonei": 5},
+  {"nome": "passaparola", "visite": 37, "click": 12, "test": 6, "idonei": 4},
+  {"nome": "landing", "visite": 65, "click": 7, "test": 1, "idonei": 0},
+  {"nome": "(diretto al test)", "visite": 0, "click": 0, "test": 1, "idonei": 0}
+ ],
+ "esiti": {"agente": 9, "segnalatore": 17, "non_idoneo": 15, "senza_piva": 6},
+ "andamento": [{"mese": "2026-07", "persone": 12, "visite": 230}, {"mese": "2026-08", "persone": 26, "visite": 410}, {"mese": "2026-09", "persone": 41, "visite": 640}]
+}

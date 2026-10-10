@@ -54,7 +54,7 @@ TXT;
     . "Mese del report: $mese\n"
     . (!empty($d['lavori']['fatto']) ? "\nLavoro fatto da CAME nel mese:\n" . implode("\n", array_map(fn($l) => "- {$l['etichetta']}: {$l['testo']}", $d['lavori']['fatto'])) . "\n" : '')
     . (!empty($d['lavori']['prossimi']) ? "\nProssimi passi già decisi:\n" . implode("\n", array_map(fn($l) => "- {$l['etichetta']}: {$l['testo']}", $d['lavori']['prossimi'])) . "\n" : '')
-    . "\nNumeri (JSON):\n" . json_encode(dati_per_claude($c, $d), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    . "\nNumeri (JSON):\n" . json_encode(($d['tipo'] ?? '') === 'imbuto' ? dati_imbuto_per_claude($d) : dati_per_claude($c, $d), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
   $corpo = [
     'model' => MODELLO,
