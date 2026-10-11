@@ -52,6 +52,16 @@ return [
                           'contatti' => ['anteprima_creata' => 'Anteprime create', 'pagamento_completato' => 'Pagamenti'],
                           'altri_eventi' => ['clic_crea_sito' => 'Clic su «Crea il tuo sito»', 'form_iniziato' => 'Moduli iniziati', 'codice_chiesto' => 'Codici email chiesti', 'attivazione_aperta' => 'Pagine di attivazione aperte'],
                           'nota_contatti' => 'anteprime create'],
+  'postavecchia'      => ['nome' => 'Posta Vecchia Cocktail Bar & Tequileria', 'sito' => 'cocktailbarpostavecchia.it', 'ga4' => '491108573', // stream G-RLLZ2T2340
+                          'settore' => 'cocktail bar e tequileria nel centro storico di Genova (Piazza della Posta Vecchia): cocktail special, tequila e mezcal, '
+                                     . 'Mexican aperitivo, cucina messicana, DJ set e Lotteria della Tequila il sabato; aperto la sera, chiuso il martedì',
+                          'nota_contatti' => 'messaggi e chiamate',
+                          'contatti' => ['prenotazione_whatsapp' => 'Prenotazioni dal modulo (WhatsApp)', 'clic_whatsapp' => 'Messaggi WhatsApp', 'clic_telefono' => 'Telefonate dal sito'],
+                          'altri_eventi' => ['clic_indicazioni' => 'Indicazioni stradali', 'clic_just_eat' => 'Clic verso Just Eat', 'clic_social' => 'Clic verso Instagram e Facebook'],
+                          'note' => 'Sito nuovo online dall\'11/10/2026 (italiano + inglese), Analytics dallo stesso giorno: ottobre è un mese parziale. '
+                                  . 'Analytics conta solo chi accetta i cookie. Le prenotazioni arrivano su WhatsApp, non per email. '
+                                  . 'clic_whatsapp comprende anche il clic sul pulsante del modulo di prenotazione. Pubblico anche turistico (versione inglese). '
+                                  . 'Scheda Google con 4,8 stelle su 90 recensioni.'],
   'supzena'           => ['nome' => 'SUP Zena', 'sito' => 'supzena.it', 'ga4' => '343925367', 'settore' => 'corsi di stand up paddle (SUP) a Genova'],
   // Percorso di selezione agenti Dojo: landing recruitingagenti → test dojotalentcheck.
   // Niente Analytics: legge il contatore senza cookie e i test dal database del test (solo totali).

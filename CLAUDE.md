@@ -31,6 +31,9 @@ In locale: `php report.php --cliente=identia --prova --solo-pdf` con `prova/clau
 - Funzionano e provati sul server: identia (anche lavori di ottobre), recruiting (Selezione agenti Dojo).
 - Collegati, primo report il 4/11/2026: be-first, came, mauriziocamerada, mvrantincendio (prop. 344604720),
   edoardocamerada, motoracer, ferramentagenova, marcofirinu, veleco (referente Valentina Colomba), supzena, tuosito (prop. 556336111).
+- Aggiunto l'11/10/2026: postavecchia (Posta Vecchia Cocktail Bar & Tequileria, cocktailbarpostavecchia.it, prop. 491108573, stream G-RLLZ2T2340;
+  sito nel repo camerada/claude in su-misura/postavecchia, online dall'11/10/2026), con `lavori/postavecchia/2026-10.md`.
+  Da fare dall'utente: dare accesso Visualizzatore all'account di servizio nella proprietà 491108573; Search Console non ancora attiva (il report la salta).
 - Report approvati dall'utente («report ok»).
 - Da fare quando l'utente lo chiede: file `lavori/` per gli altri clienti, referenti in copertina, passaggio ad `automatico`.
 
