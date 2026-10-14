@@ -32,7 +32,11 @@ function righe_etichettate(Pdf $p, array $voci): void {
 }
 
 function crea_pdf(array $c, array $d, array $t, bool $esempio = false): string {
-  $mese = mese_italiano($d['mese']);
+  $per = $d['periodo'] ?? [];
+  $parziale = !empty($per['parziale']);
+  $mese = $per['etichetta'] ?? mese_italiano($d['mese']);
+  $quando = $parziale ? $mese : explode(' ', $mese)[0];                  // «dal 1 al 10 ottobre 2026» oppure «ottobre»
+  $colonne = [$per['breve'] ?? 'questo mese', $per['breve_prima'] ?? 'mese prima'];
   $p = new Pdf();
   $piede = "CAME Comunicazione per {$c['nome']}";
   $p->alCambioPagina = function (Pdf $p, int $n) use ($piede) {
@@ -51,7 +55,7 @@ function crea_pdf(array $c, array $d, array $t, bool $esempio = false): string {
   $p->testo(M + 96, 107, 'camecomunicazione.it', 'testo', 8.5, '#FFFFFF');
   $p->testo(M, 328, 'Report del sito, ' . $mese . ($esempio ? ' - esempio con dati finti' : ''), 'mono', 9, LIME);
   $p->y = 346;
-  foreach (['Il tuo sito,', 'cosa è successo', 'a ' . explode(' ', $mese)[0]] as $r) { $p->testo(M, $p->y + 34, $r, 'titolo', 36, '#FFFFFF'); $p->y += 42; }
+  foreach (['Il tuo sito,', 'cosa è successo', $parziale ? preg_replace('/ \d{4}$/', '', $mese) : 'a ' . $quando] as $r) { $p->testo(M, $p->y + 34, $r, 'titolo', 36, '#FFFFFF'); $p->y += 42; }
   $p->testo(M, $p->y + 34, $c['nome'], 'testo', 12.5, '#FFFFFF');
   $p->testo(M, $p->y + 52, $c['sito'], 'testo', 12.5, '#FFFFFF');
   $p->rett(M, 662, 130, 8, LIME);
@@ -94,7 +98,7 @@ function crea_pdf(array $c, array $d, array $t, bool $esempio = false): string {
     $y0 = $p->y;
     $p->rett(M, $y0, W, $gh, FONDO2, 8);
     $p->bordo(M, $y0, W, $gh, LINEA, 8);
-    $p->testo(M + 20, $y0 + 30, $d['grafico_titolo'] ?? 'Persone sul sito, mese per mese', 'grassetto', 11.5, INCHIOSTRO);
+    $p->testo(M + 20, $y0 + 30, $d['grafico_titolo'] ?? ($parziale ? 'Persone sul sito, gli stessi giorni mese per mese' : 'Persone sul sito, mese per mese'), 'grassetto', 11.5, INCHIOSTRO);
     $max = max(1, ...array_column($and, 'persone'));
     $base = $y0 + 168; $hMax = 105; $bw = 110; $passo = (W - 40) / count($and);
     $p->linea(M + 20, $base, M + W - 20, $base, INCHIOSTRO, 0.8);
@@ -104,7 +108,7 @@ function crea_pdf(array $c, array $d, array $t, bool $esempio = false): string {
       $p->rett($cx - $bw / 2, $base - $h, $bw, $h, $i === count($and) - 1 ? LIME : CIANO, 3);
       $p->rett($cx - $bw / 2, $base - 3, $bw, 3, $i === count($and) - 1 ? LIME : CIANO);
       $p->testo($cx, $base - $h - 8, numero($a['persone']), 'mono2', 11, PETROLIO, 'c');
-      $p->testo($cx, $base + 16, ucfirst(explode(' ', mese_italiano($a['mese']))[0]), 'testo', 9, SECONDARIO, 'c');
+      $p->testo($cx, $base + 16, $parziale ? (int)substr($per['dal'], 8) . '-' . (int)substr($per['al'], 8) . ' ' . explode(' ', mese_italiano($a['mese']))[0] : ucfirst(explode(' ', mese_italiano($a['mese']))[0]), 'testo', 9, SECONDARIO, 'c');
     }
     $p->y = $base + 30;
     $p->paragrafo($t['nota_grafico'], M + 20, W - 40, 'testo', 8.5, SECONDARIO, 1.5);
@@ -121,7 +125,7 @@ function crea_pdf(array $c, array $d, array $t, bool $esempio = false): string {
 
   // ── Cosa ci dicono i dati
   $p->nuovaPagina();
-  titolo_sezione($p, 'Cosa ci dicono i dati', 'Abbiamo letto i dati ' . ($d['fonte_dati'] ?? 'di Google') . ' di ' . explode(' ', $mese)[0] . '. Ecco le cose più utili per te.');
+  titolo_sezione($p, 'Cosa ci dicono i dati', 'Abbiamo letto i dati ' . ($d['fonte_dati'] ?? 'di Google') . ($parziale ? ', ' . $quando : ' di ' . $quando) . '. Ecco le cose più utili per te.');
   foreach ($t['scoperte'] as $i => $s) {
     $h = 20 + Pdf::altezza($s['testo'], W - 36, 'testo', 10) + 22;
     $p->spazio($h);
@@ -135,7 +139,7 @@ function crea_pdf(array $c, array $d, array $t, bool $esempio = false): string {
 
   // ── I numeri del mese
   $p->nuovaPagina();
-  titolo_sezione($p, 'I numeri del mese');
+  titolo_sezione($p, $parziale ? 'I numeri del periodo' : 'I numeri del mese');
   $barre = function (string $tit, string $nota, array $voci, string $et, string $val, bool $percento, ?float $base = null) use ($p) {
     if (!$voci) return;
     $p->spazio(60);
@@ -191,7 +195,7 @@ function crea_pdf(array $c, array $d, array $t, bool $esempio = false): string {
       ['nome' => 'Agente diretto', 'n' => $e['agente']], ['nome' => 'Segnalatore', 'n' => $e['segnalatore']],
       ['nome' => 'Non idoneo', 'n' => $e['non_idoneo']], ['nome' => 'di cui senza Partita IVA', 'n' => $e['senza_piva']],
     ], fn($x) => $x['nome'] !== 'di cui senza Partita IVA' || $x['n'] > 0)), 'nome', 'n', true, max(1, $d['totali']['test']));
-    $tabella('Confronto con il mese prima', '', ['questo mese', 'mese prima'], [
+    $tabella('Confronto con il mese prima', '', $colonne, [
       ['Visite alla pagina', $d['totali']['visite'], $d['totali_prima']['visite']],
       ['Clic su «Dimostralo»', $d['totali']['click'], $d['totali_prima']['click']],
       ['Test completati', $d['totali']['test'], $d['totali_prima']['test']],
@@ -203,7 +207,7 @@ function crea_pdf(array $c, array $d, array $t, bool $esempio = false): string {
     $righe = [];
     foreach ($c['contatti'] ?? [] as $k => $n) $righe[] = [$n, $d['eventi'][$k] ?? 0, $d['eventi_prima'][$k] ?? 0];
     foreach ($c['altri_eventi'] ?? [] as $k => $n) $righe[] = [$n, $d['eventi'][$k] ?? 0, $d['eventi_prima'][$k] ?? 0];
-    $tabella('Come ti hanno contattato dal sito', '', ['questo mese', 'mese prima'], $righe);
+    $tabella('Come ti hanno contattato dal sito', '', $colonne, $righe);
     if (!empty($d['google']['ricerche'])) {
       $tabella('Cosa cercano su Google per trovarti', $t['nota_google'], ['volte che compari', 'clic sul sito'],
         array_map(fn($r) => ['«' . $r['testo'] . '»', $r['comparse'], $r['clic']], array_slice($d['google']['ricerche'], 0, 6)));

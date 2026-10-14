@@ -10,17 +10,40 @@ const CANALI_IT = [
 ];
 const DISPOSITIVI_IT = ['mobile' => 'Telefono', 'desktop' => 'Computer', 'tablet' => 'Tablet'];
 
-function periodo(string $mese): array {
-  $inizio = new DateTimeImmutable("$mese-01");
-  $prima = $inizio->modify('-1 month');
+// Mese intero, oppure una parte del mese (--dal/--al): allora il confronto è con gli stessi giorni del mese prima.
+function periodo(string $mese, ?string $dal = null, ?string $al = null): array {
+  if ($dal === null) {
+    $inizio = new DateTimeImmutable("$mese-01");
+    $prima = $inizio->modify('-1 month');
+    return [
+      'dal' => $inizio->format('Y-m-d'), 'al' => $inizio->format('Y-m-t'),
+      'dal_prima' => $prima->format('Y-m-d'), 'al_prima' => $prima->format('Y-m-t'),
+      'parziale' => false, 'etichetta' => mese_italiano($mese), 'breve' => 'questo mese', 'breve_prima' => 'mese prima',
+    ];
+  }
+  $a = new DateTimeImmutable($dal); $b = new DateTimeImmutable($al);
+  $ap = mesi_indietro($a, 1); $bp = mesi_indietro($b, 1);
   return [
-    'dal' => $inizio->format('Y-m-d'), 'al' => $inizio->format('Y-m-t'),
-    'dal_prima' => $prima->format('Y-m-d'), 'al_prima' => $prima->format('Y-m-t'),
+    'dal' => $a->format('Y-m-d'), 'al' => $b->format('Y-m-d'),
+    'dal_prima' => $ap->format('Y-m-d'), 'al_prima' => $bp->format('Y-m-d'),
+    'parziale' => true, 'etichetta' => giorni_italiano($a, $b), 'etichetta_prima' => giorni_italiano($ap, $bp),
+    'breve' => giorni_breve($a, $b), 'breve_prima' => giorni_breve($ap, $bp),
   ];
 }
+// stesso giorno n mesi prima (31 ottobre → 30 settembre)
+function mesi_indietro(DateTimeImmutable $x, int $n): DateTimeImmutable {
+  $primo = $x->modify('first day of this month')->modify("-$n months");
+  return $primo->setDate((int)$primo->format('Y'), (int)$primo->format('m'), min((int)$x->format('j'), (int)$primo->format('t')));
+}
+function giorni_italiano(DateTimeImmutable $a, DateTimeImmutable $b): string {
+  return 'dal ' . $a->format('j') . ' al ' . $b->format('j') . ' ' . mese_italiano($b->format('Y-m'));
+}
+function giorni_breve(DateTimeImmutable $a, DateTimeImmutable $b): string {
+  return $a->format('j') . '-' . $b->format('j') . ' ' . mb_substr(mese_italiano($b->format('Y-m')), 0, 3);
+}
 
-function raccogli_dati(array $c, string $mese): array {
-  $p = periodo($mese);
+function raccogli_dati(array $c, string $mese, ?array $p = null): array {
+  $p ??= periodo($mese);
   $prop = $c['ga4'];
   $tot = fn($dal, $al) => ga4($prop, $dal, $al, ['activeUsers', 'newUsers', 'sessions', 'screenPageViews', 'engagementRate', 'averageSessionDuration'])[0] ?? [];
   $eventi = function ($dal, $al) use ($prop, $c) {
@@ -50,7 +73,19 @@ function raccogli_dati(array $c, string $mese): array {
     'google' => null,
   ];
 
-  // Andamento degli ultimi 3 mesi (per il grafico): persone e visite da Google, mese per mese
+  // Andamento degli ultimi 3 mesi (per il grafico): persone e visite da Google, mese per mese.
+  // Per una parte del mese: gli stessi giorni in ognuno dei 3 mesi, così le barre sono confrontabili.
+  if ($p['parziale']) {
+    $d['andamento'] = [];
+    $organico = ['dimensionFilter' => ['filter' => ['fieldName' => 'sessionDefaultChannelGroup', 'stringFilter' => ['value' => 'Organic Search']]]];
+    for ($i = 2; $i >= 0; $i--) {
+      $dal = mesi_indietro(new DateTimeImmutable($p['dal']), $i)->format('Y-m-d');
+      $al = mesi_indietro(new DateTimeImmutable($p['al']), $i)->format('Y-m-d');
+      $d['andamento'][] = ['mese' => substr($al, 0, 7),
+        'persone' => (int)(ga4($prop, $dal, $al, ['activeUsers'])[0]['activeUsers'] ?? 0),
+        'da_google' => (int)(ga4($prop, $dal, $al, ['sessions'], [], $organico)[0]['sessions'] ?? 0)];
+    }
+  } else {
   $inizio3 = (new DateTimeImmutable("$mese-01"))->modify('-2 months')->format('Y-m-d');
   $mesi = [];
   for ($i = 2; $i >= 0; $i--) $mesi[(new DateTimeImmutable("$mese-01"))->modify("-$i months")->format('Ym')] = ['persone' => 0, 'da_google' => 0];
@@ -60,6 +95,7 @@ function raccogli_dati(array $c, string $mese): array {
     if (isset($mesi[$r['yearMonth']])) $mesi[$r['yearMonth']]['da_google'] = (int)$r['sessions'];
   $d['andamento'] = [];
   foreach ($mesi as $ym => $v) $d['andamento'][] = ['mese' => substr($ym, 0, 4) . '-' . substr($ym, 4)] + $v;
+  }
 
   // Search Console: la proprietà indicata, oppure prova i formati più comuni
   $candidati = $c['search_console'] !== '' ? [$c['search_console']]

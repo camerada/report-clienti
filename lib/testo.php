@@ -31,7 +31,8 @@ const SCHEMA_TESTI = [
 ];
 
 function scrivi_testi(array $c, array $d): array {
-  $mese = mese_italiano($d['mese']);
+  $per = $d['periodo'] ?? [];
+  $mese = $per['etichetta'] ?? mese_italiano($d['mese']);
   $sistema = <<<TXT
 Scrivi il report mensile del sito web di un'attività, per conto di CAME Comunicazione, l'agenzia che lo gestisce.
 Lo legge il titolare: non è un esperto di internet. Scrivi in italiano semplice, frasi brevi, niente termini tecnici
@@ -51,7 +52,11 @@ Regole:
 TXT;
   $utente = "Attività: {$c['nome']} — sito {$c['sito']}\nSettore: {$c['settore']}\n"
     . (!empty($c['note']) ? "Note: {$c['note']}\n" : '')
-    . "Mese del report: $mese\n"
+    . (!empty($per['parziale'])
+      ? "Periodo del report: $mese (solo questi giorni, non il mese intero). Nei numeri «questo_mese» è questo periodo e «mese_prima» sono "
+        . "gli stessi giorni del mese prima ({$per['etichetta_prima']}); il grafico confronta gli stessi giorni negli ultimi 3 mesi. "
+        . "Parla di «questi giorni» o «questo periodo», non di «questo mese»; i prossimi passi sono per le prossime settimane.\n"
+      : "Mese del report: $mese\n")
     . (!empty($d['lavori']['fatto']) ? "\nLavoro fatto da CAME nel mese:\n" . implode("\n", array_map(fn($l) => "- {$l['etichetta']}: {$l['testo']}", $d['lavori']['fatto'])) . "\n" : '')
     . (!empty($d['lavori']['prossimi']) ? "\nProssimi passi già decisi:\n" . implode("\n", array_map(fn($l) => "- {$l['etichetta']}: {$l['testo']}", $d['lavori']['prossimi'])) . "\n" : '')
     . "\nNumeri (JSON):\n" . json_encode(($d['tipo'] ?? '') === 'imbuto' ? dati_imbuto_per_claude($d) : dati_per_claude($c, $d), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

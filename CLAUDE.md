@@ -24,6 +24,7 @@ Hostinger, alias SSH `identia` (utente u745278502), cartella `~/report-clienti` 
 Cron in hPanel (uno solo): `12 8 4 * * /usr/bin/php /home/u745278502/report-clienti/report.php --tutti`.
 Aggiornare il server dal Mac: `cd ~/report-clienti && git pull && sh carica.sh` (chiede conferma, non cancella).
 Prova: `ssh identia "cd report-clienti && php report.php --cliente=<id> --mese=AAAA-MM"`.
+Parte di un mese: `--dal=AAAA-MM-GG --al=AAAA-MM-GG` (stesso mese; confronto con gli stessi giorni del mese prima, file `<cliente>/<dal>_<al>`).
 In locale: `php report.php --cliente=identia --prova --solo-pdf` con `prova/claude-finto.php` su 127.0.0.1:8770
 (config.php di prova con CLAUDE_API_URL/BREVO_API_URL finti). Google, Claude e MySQL veri non sono raggiungibili da Claude Code.
 
