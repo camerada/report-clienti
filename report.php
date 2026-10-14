@@ -7,6 +7,7 @@
  *   php report.php --cliente=veleco --dal=2026-10-01 --al=2026-10-10   una parte del mese (confronto con gli stessi giorni del mese prima)
  *   php report.php --tutti                           tutti i clienti (questo lo lancia il cron)
  *   php report.php --cliente=identia --solo-pdf      crea il PDF in uscite/ senza mandare email
+ *   php report.php --cliente=identia --solo-dati     salva solo i numeri in uscite/<cliente>/<periodo>-dati.json (niente Claude, niente email)
  *   php report.php --cliente=identia --prova         dati finti da prova/esempio.json (niente Google)
  *
  * Ogni cliente ha 'automatico' in clienti.php: false = il PDF arriva solo a CAME (da controllare e
@@ -18,7 +19,7 @@ date_default_timezone_set('Europe/Rome');
 require __DIR__ . '/config.php';
 foreach (['google', 'dati', 'imbuto', 'testo', 'pdf', 'impagina', 'email'] as $f) require __DIR__ . "/lib/$f.php";
 
-$opz = getopt('', ['cliente:', 'mese:', 'dal:', 'al:', 'tutti', 'solo-pdf', 'prova', 'forza']);
+$opz = getopt('', ['cliente:', 'mese:', 'dal:', 'al:', 'tutti', 'solo-pdf', 'solo-dati', 'prova', 'forza']);
 $clienti = require __DIR__ . '/clienti.php';
 $mese = $opz['mese'] ?? (new DateTimeImmutable('first day of last month'))->format('Y-m');
 if (!preg_match('/^\d{4}-\d{2}$/', $mese)) exit("Mese non valido: usa AAAA-MM\n");
@@ -43,12 +44,18 @@ foreach ($quali as $id) {
   if (empty($c['ga4']) && empty($c['db_config']) && !isset($opz['prova'])) { echo "$id: manca l'ID della proprietà Analytics in clienti.php, salto\n"; continue; }
   try {
     $giaInviato = is_file($registro) && preg_match('/^' . preg_quote("$id;$chiave;", '/') . '.*;inviato$/m', file_get_contents($registro));
-    if ($giaInviato && !isset($opz['forza']) && !isset($opz['solo-pdf']) && !isset($opz['prova'])) { echo "$id $chiave: già inviato, salto (--forza per rifarlo)\n"; continue; }
+    if ($giaInviato && !isset($opz['forza']) && !isset($opz['solo-pdf']) && !isset($opz['solo-dati']) && !isset($opz['prova'])) { echo "$id $chiave: già inviato, salto (--forza per rifarlo)\n"; continue; }
 
     $d = isset($opz['prova']) ? json_decode(file_get_contents(__DIR__ . (empty($c['db_config']) ? '/prova/esempio.json' : '/prova/esempio-imbuto.json')), true) + ['mese' => $mese]
       : (empty($c['db_config']) ? raccogli_dati($c, $mese, $per) : ($per ? throw new RuntimeException('--dal/--al non vale per il report del test') : raccogli_imbuto($c, $mese)));
     $d['periodo'] = ($per ?? []) + ($d['periodo'] ?? []) + periodo($mese);
     $d['lavori'] = isset($opz['prova']) ? leggi_lavori_file(__DIR__ . '/prova/lavori-esempio.md') : leggi_lavori($id, $mese);
+    if (isset($opz['solo-dati'])) {
+      @mkdir(__DIR__ . "/uscite/$id", 0750, true);
+      file_put_contents(__DIR__ . "/uscite/$id/$chiave-dati.json", json_encode($d, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+      echo "$id $chiave: numeri in uscite/$id/$chiave-dati.json\n";
+      continue;
+    }
     $t = scrivi_testi($c, $d);
     $pdf = crea_pdf($c, $d, $t, isset($opz['prova']));
     $nome = "report-{$c['sito']}-$chiave.pdf";
