@@ -45,7 +45,10 @@ return [
   'motoracer'         => ['nome' => 'Moto Racer Genova', 'sito' => 'motoracergenova.it', 'ga4' => '364318665', 'settore' => 'moto a Genova'],
   'ferramentagenova'  => ['nome' => 'Paradiso della Brugola', 'sito' => 'ferramentagenova.it', 'ga4' => '461834714', 'settore' => 'ferramenta a Genova'],
   'marcofirinu'       => ['nome' => 'Marco Firinu', 'sito' => 'marcofirinu.it', 'ga4' => '480296162'],
-  'veleco'            => ['nome' => 'Concessionario Veleco Italia', 'referente' => 'Valentina Colomba', 'sito' => 'concessionariovelecoitalia.it', 'ga4' => '546703442', 'settore' => 'concessionario di veicoli elettrici Veleco'],
+  'veleco'            => ['nome' => 'Concessionario Veleco Italia', 'referente' => 'Valentina Colomba', 'sito' => 'concessionariovelecoitalia.it', 'ga4' => '546703442', 'settore' => 'concessionario di veicoli elettrici Veleco',
+                          'nota_contatti' => 'chiamate e messaggi',
+                          'contatti' => ['click_call' => 'Telefonate dal sito', 'click_whatsapp' => 'Messaggi WhatsApp', 'click_email' => 'Email', 'form_start' => 'Moduli iniziati'],
+                          'altri_eventi' => ['click_outbound' => 'Clic verso altri siti', 'play_video' => 'Video guardati']],
   'tuosito'           => ['nome' => 'TuoSito.si', 'sito' => 'tuosito.si', 'ga4' => '556336111', // stream G-3SSSGG4FXT
                           'settore' => 'servizio online di CAME per creare siti per piccole attività (landing tuosito.si + motore vetrina.si)',
                           'note' => 'tuosito.si e vetrina.si hanno la stessa proprietà Analytics.',
