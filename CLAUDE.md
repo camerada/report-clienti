@@ -25,6 +25,7 @@ Cron in hPanel (uno solo): `12 8 4 * * /usr/bin/php /home/u745278502/report-clie
 Aggiornare il server dal Mac: `cd ~/report-clienti && git pull && sh carica.sh` (chiede conferma, non cancella).
 Prova: `ssh identia "cd report-clienti && php report.php --cliente=<id> --mese=AAAA-MM"`.
 Parte di un mese: `--dal=AAAA-MM-GG --al=AAAA-MM-GG` (stesso mese; confronto con gli stessi giorni del mese prima, file `<cliente>/<dal>_<al>`).
+Analisi approfondita di un cliente: `esporta.php --cliente=<id> [--dal=AAAA-MM-GG]` scrive su stdout un JSON grezzo (Analytics da 12 mesi: canali per mese, fonti, pagine di arrivo, eventi, contatti per giorno/pagina/fonte/città, città, dispositivi, età; Search Console 16 mesi: mesi, ricerche, pagine, ricerca+pagina, paesi, dispositivi), copia in `uscite/<id>/analisi-<data>.json`. Dal Mac: `ssh identia "cd report-clienti && php esporta.php --cliente=veleco" > ~/Desktop/veleco-dati.json`, poi il file si manda a Claude Code.
 Senza credito Claude: `--solo-dati` salva i numeri in `uscite/<cliente>/<periodo>-dati.json`; i testi li scrive Claude Code e crea il PDF in locale con `crea_pdf()`.
 In locale: `php report.php --cliente=identia --prova --solo-pdf` con `prova/claude-finto.php` su 127.0.0.1:8770
 (config.php di prova con CLAUDE_API_URL/BREVO_API_URL finti). Google, Claude e MySQL veri non sono raggiungibili da Claude Code.
