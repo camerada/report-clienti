@@ -36,7 +36,8 @@ In locale: `php report.php --cliente=identia --prova --solo-pdf` con `prova/clau
   edoardocamerada, motoracer, ferramentagenova, marcofirinu, veleco (referente Valentina Colomba), supzena, tuosito (prop. 556336111).
 - Aggiunto l'11/10/2026: postavecchia (Posta Vecchia Cocktail Bar & Tequileria, cocktailbarpostavecchia.it, prop. 491108573, stream G-RLLZ2T2340;
   sito nel repo camerada/claude in su-misura/postavecchia, online dall'11/10/2026), con `lavori/postavecchia/2026-10.md`.
-  Da fare dall'utente: dare accesso Visualizzatore all'account di servizio nella proprietà 491108573; Search Console non ancora attiva (il report la salta).
+  Accesso Visualizzatore all'account di servizio dato dall'utente e verificato il 23/10/2026 sul server (`--solo-dati` dall'11 al 22/10 riuscito);
+  programma aggiornato sul server lo stesso giorno. Search Console non ancora attiva (il report la salta).
 - Report approvati dall'utente («report ok»).
 - Da fare quando l'utente lo chiede: file `lavori/` per gli altri clienti, referenti in copertina, passaggio ad `automatico`.
 
