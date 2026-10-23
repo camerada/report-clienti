@@ -38,6 +38,7 @@ if (!$quali[0] || !isset($clienti[$quali[0]])) exit("Indica --cliente=NOME (" . 
 $registro = __DIR__ . '/uscite/registro.csv';
 @mkdir(__DIR__ . '/uscite', 0750, true);
 $errori = 0;
+$falliti = [];
 
 foreach ($quali as $id) {
   $c = $clienti[$id] + PREDEFINITI;
@@ -80,10 +81,18 @@ foreach ($quali as $id) {
     $errori++;
     echo "$id $chiave: ERRORE " . $e->getMessage() . "\n";
     file_put_contents($registro, "$id;$chiave;" . date('c') . ";errore: " . str_replace(["\n", ';'], ' ', $e->getMessage()) . "\n", FILE_APPEND);
-    if (!isset($opz['prova'])) {
-      try { invia_email([EMAIL_CAME], "Report di {$c['sito']} non riuscito", '<p>' . htmlspecialchars($e->getMessage()) . '</p>', '', 'vuoto.txt'); } catch (Throwable) {}
-    }
+    $falliti[] = ['sito' => $c['sito'], 'periodo' => $chiave, 'errore' => $e->getMessage()];
   }
+}
+// Un'unica email a CAME con tutti i report non riusciti (es. credito di Claude finito: un avviso, non uno per cliente)
+if ($falliti && !isset($opz['prova'])) {
+  $credito = (bool)array_filter($falliti, fn($f) => str_contains($f['errore'], 'credit balance'));
+  try {
+    invia_email([EMAIL_CAME], count($falliti) === 1 ? "Report di {$falliti[0]['sito']} non riuscito" : count($falliti) . ' report non riusciti',
+      ($credito ? '<p><b>Credito di Claude finito:</b> ricaricalo su console.anthropic.com (Plans &amp; Billing), poi rilancia con <code>php report.php --tutti</code> (i report già inviati non ripartono).</p>' : '')
+      . '<ul>' . implode('', array_map(fn($f) => '<li><b>' . htmlspecialchars($f['sito']) . '</b> (' . htmlspecialchars($f['periodo']) . '): ' . htmlspecialchars($f['errore']) . '</li>', $falliti)) . '</ul>',
+      '', 'vuoto.txt');
+  } catch (Throwable $e) { echo "Email di avviso non partita: " . $e->getMessage() . "\n"; }
 }
 exit($errori ? 1 : 0);
 
