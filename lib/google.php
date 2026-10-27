@@ -12,7 +12,7 @@ function google_token(): string {
   $testa = $b64(json_encode(['alg' => 'RS256', 'typ' => 'JWT']));
   $corpo = $b64(json_encode([
     'iss'   => $chiave['client_email'],
-    'scope' => 'https://www.googleapis.com/auth/analytics.readonly https://www.googleapis.com/auth/webmasters.readonly',
+    'scope' => 'https://www.googleapis.com/auth/analytics.readonly https://www.googleapis.com/auth/webmasters.readonly https://www.googleapis.com/auth/tagmanager.readonly',
     'aud'   => $chiave['token_uri'] ?? 'https://oauth2.googleapis.com/token',
     'iat'   => $ora,
     'exp'   => $ora + 3600,
