@@ -1,7 +1,7 @@
 <?php
 /**
  * Dati settimanali di Analytics (GA4) per il report social: sessioni, utenti e sessioni coinvolte per
- * sorgente / canale / campagna (gli UTM dei social) e gli eventi, per la settimana lunedì-domenica
+ * sorgente / medium / campagna / canale (gli UTM dei social) e gli eventi, per la settimana lunedì-domenica
  * appena chiusa e per quella prima (così il confronto lo trova già fatto).
  * Scrive un JSON in una cartella del sito chiusa al web (.htaccess); lo legge il «Report social settimanale»
  * (attività programmata di Claude) con lo strumento Hostinger, dal filesystem. Niente Claude, niente PDF.
@@ -28,7 +28,9 @@ require __DIR__ . '/config.php';
 require __DIR__ . '/lib/google.php';
 require __DIR__ . '/lib/email.php';
 
-// utm_medium che contano come «social» (è lo stesso filtro del report: sessionMedium == social)
+// «Social» = sessioni del canale Organic Social / Paid Social di GA4 (comprende Facebook e Instagram anche senza UTM,
+// es. m.facebook.com, che altrimenti risulta «referral») oppure con utm_medium social
+const CANALI_SOCIAL = ['Organic Social', 'Paid Social'];
 const MEDIUM_SOCIAL = ['social'];
 // eventi di cui il JSON riporta il conteggio per sorgente/campagna, oltre a quelli di clienti.php
 // (prova_gratuita: se un giorno si aggiunge in GTM, compare da solo)
@@ -49,12 +51,20 @@ $nomi = array_values(array_unique(array_merge(array_keys($etichette), EVENTI_EXT
 function intero(array $righe): array {   // le metriche di ga4() sono float: nel JSON servono numeri interi
   return array_map(function ($r) { foreach ($r as $k => $v) if (is_float($v)) $r[$k] = (int)round($v); return $r; }, $righe);
 }
-function filtro_social(): array { return ['filter' => ['fieldName' => 'sessionMedium', 'inListFilter' => ['values' => MEDIUM_SOCIAL]]]; }
+function filtro_social(): array {
+  return ['orGroup' => ['expressions' => [
+    ['filter' => ['fieldName' => 'sessionDefaultChannelGroup', 'inListFilter' => ['values' => CANALI_SOCIAL]]],
+    ['filter' => ['fieldName' => 'sessionMedium', 'inListFilter' => ['values' => MEDIUM_SOCIAL]]],
+  ]]];
+}
+function e_social(array $r): bool {   // una riga di sorgenti: è social?
+  return in_array($r['sessionDefaultChannelGroup'] ?? '', CANALI_SOCIAL, true) || in_array($r['sessionMedium'] ?? '', MEDIUM_SOCIAL, true);
+}
 function filtro_eventi(array $nomi): array { return ['filter' => ['fieldName' => 'eventName', 'inListFilter' => ['values' => $nomi]]]; }
 function ordina_per(string $metrica, int $limite = 500): array {
   return ['orderBys' => [['metric' => ['metricName' => $metrica], 'desc' => true]], 'limit' => $limite];
 }
-const DIM_SORGENTE = ['sessionSource', 'sessionMedium', 'sessionCampaignName'];
+const DIM_SORGENTE = ['sessionSource', 'sessionMedium', 'sessionCampaignName', 'sessionDefaultChannelGroup'];
 
 // Tutti i numeri di una settimana. Un errore di Google risale: meglio nessun dato che dati a metà.
 function settimana_ga4(string $prop, string $dal, string $al, array $nomi): array {
@@ -65,7 +75,7 @@ function settimana_ga4(string $prop, string $dal, string $al, array $nomi): arra
     ['dimensionFilter' => ['andGroup' => ['expressions' => [filtro_social(), filtro_eventi($nomi)]]]]) as $r) $eventiSocial[$r['eventName']] = (int)$r['eventCount'];
   return [
     'totali'              => $totali(),                                   // tutto il sito
-    'social'              => $totali(['dimensionFilter' => filtro_social()]),   // solo sessionMedium == social (utenti senza doppi conteggi)
+    'social'              => $totali(['dimensionFilter' => filtro_social()]),   // solo sessioni social (utenti senza doppi conteggi)
     'sorgenti'            => intero(ga4($prop, $dal, $al, $m3, DIM_SORGENTE, ordina_per('sessions'))),
     'eventi'              => intero(ga4($prop, $dal, $al, ['eventCount'], ['eventName'], ordina_per('eventCount'))),
     'eventi_social'       => $eventiSocial,                               // evento => conteggio, solo sessioni social
@@ -131,8 +141,8 @@ function diagnostica(string $prop, array $nomi, array $etichette): void {
     $r = $conteggi[$n] ?? null;
     fwrite(STDERR, sprintf("  %-22s %s\n", $n, $r ? "{$r['eventCount']} eventi, {$r['totalUsers']} utenti" : 'ASSENTE (mai ricevuto)'));
   }
-  $sociali = 0; foreach ($b['sorgenti'] ?? [] as $r) if (isset($r['sessionMedium']) && in_array($r['sessionMedium'], MEDIUM_SOCIAL, true)) $sociali += $r['sessions'];
-  fwrite(STDERR, "\nSessioni con medium " . implode('/', MEDIUM_SOCIAL) . ": $sociali\n");
+  $sociali = 0; foreach ($b['sorgenti'] ?? [] as $r) if (isset($r['sessions']) && e_social($r)) $sociali += $r['sessions'];
+  fwrite(STDERR, "\nSessioni social (canale " . implode('/', CANALI_SOCIAL) . " o medium " . implode('/', MEDIUM_SOCIAL) . "): $sociali\n");
   $auto = 0; foreach ($b['auto_referral'] ?? [] as $r) if (isset($r['sessions'])) $auto += $r['sessions'];
   fwrite(STDERR, "Sessioni con sorgente tuosito.si o vetrina.si (auto-referral): $auto"
     . ($auto > 0 ? " → il passaggio tra i due domini può spezzare la sessione e far perdere la sorgente social: in GA4 (Flussi di dati → Misurazione tra domini) controlla che compaiano entrambi\n" : " → nessun problema visibile\n"));
@@ -166,10 +176,11 @@ try {
     'settimana'        => $etichetta,
     'periodo'          => $periodo,
     'periodo_prima'    => ['dal' => $lunP->format('Y-m-d'), 'al' => $domP->format('Y-m-d')],
-    'medium_social'    => MEDIUM_SOCIAL,
+    'definizione_social' => ['canali' => CANALI_SOCIAL, 'medium' => MEDIUM_SOCIAL],
     'etichette_eventi' => $etichette,
     'note'             => [
       'Analytics conta solo chi accetta i cookie: i numeri sono più bassi dei clic reali visti da Metricool.',
+      'Social = canale Organic Social o Paid Social di GA4 (include Facebook e Instagram senza UTM) oppure utm_medium social. In «sorgenti» ogni riga ha sessionDefaultChannelGroup.',
       'Gli ultimi giorni di GA4 possono completarsi con 24-48 ore di ritardo.',
       'eventi_social: 0 = nessun evento nella settimana; se il nome manca in «eventi» l\'evento potrebbe non essere attivo.',
     ],
