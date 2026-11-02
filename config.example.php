@@ -19,3 +19,9 @@ define('CHIAVE_GOOGLE', __DIR__ . '/chiave-google.json');
 // Solo per le prove in locale: API finte al posto di quelle vere
 // define('CLAUDE_API_URL', 'http://127.0.0.1:8770/v1/messages');
 // define('BREVO_API_URL', 'http://127.0.0.1:8770/v3/smtp/email');
+
+// Facoltativo, solo per ga4-settimanale.php (dati GA4 settimanali per il report social).
+// Cartella chiusa al web dove scrive i JSON; se manca usa ~/domains/<sito>/public_html/_report-privato
+// define('GA4_SETTIMANALE_CARTELLA', '/home/<utente>/domains/tuosito.si/public_html/_report-privato');
+// Indirizzo con cui controlla da fuori che la cartella risponda 403 (predefinito: https://<sito>/_report-privato/ga4-latest.json)
+// define('GA4_SETTIMANALE_URL', 'https://tuosito.si/_report-privato/ga4-latest.json');

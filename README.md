@@ -23,6 +23,10 @@ php report.php --cliente=identia --mese=2026-10   # un mese preciso
 php report.php --cliente=identia --solo-pdf       # solo il PDF in uscite/, niente email
 php report.php --tutti                            # tutti i clienti (lo usa il cron)
 php report.php --cliente=identia --prova          # dati finti, per provare l'impaginazione
+
+php ga4-settimanale.php                           # JSON GA4 della settimana scorsa per il report social (tuosito)
+php ga4-settimanale.php --diagnostica             # cosa arriva a GA4 negli ultimi 30 giorni (eventi, sorgenti)
+php ga4-settimanale.php --stampa                  # JSON su schermo, senza scrivere niente
 ```
 
 Un report già inviato al cliente non riparte due volte (`uscite/registro.csv`); `--forza` per rifarlo.
@@ -52,6 +56,10 @@ Dopo modifiche al codice: `sh carica.sh`.
 Il 4 di ogni mese alle 8:12:
 ```
 12 8 4 * * /usr/bin/php /home/<utente>/report-clienti/report.php --tutti
+```
+Il lunedì alle 7:30 (dati GA4 per il report social settimanale, vedi `ga4-settimanale.php`):
+```
+30 7 * * 1 /usr/bin/php /home/<utente>/report-clienti/ga4-settimanale.php >/dev/null 2>&1
 ```
 
 ## Aggiungere un cliente
