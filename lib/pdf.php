@@ -1,6 +1,6 @@
 <?php
 // Motore PDF scritto a mano, senza librerie: A4, caratteri TrueType incorporati (risorse/*.ttf,
-// codifica WinAnsi), rettangoli, linee, cerchi e il logo CAME con trasparenza.
+// codifica WinAnsi), rettangoli, linee, cerchi, il logo CAME con trasparenza e link cliccabili.
 // Coordinate dall'alto della pagina (y cresce verso il basso), convertite quando si scrive.
 
 class Pdf {
@@ -17,6 +17,7 @@ class Pdf {
   private array $pagine = [];
   private string $flusso = '';
   private array $usati = [];
+  private array $link = [];        // link cliccabili, per pagina
   public float $y = 0;
   public float $margineSotto = 70;
   public $alCambioPagina = null;   // funzione chiamata a ogni pagina nuova (piè di pagina)
@@ -71,6 +72,11 @@ class Pdf {
   }
   function linea(float $x1, float $y1, float $x2, float $y2, string $colore, float $sp = 0.8): void {
     $this->flusso .= sprintf("%s RG %.2F w %.2F %.2F m %.2F %.2F l S\n", self::rgb($colore), $sp, $x1, self::A - $y1, $x2, self::A - $y2);
+  }
+  // zona cliccabile che apre un indirizzo (es. il pulsante WhatsApp); niente bordo, il disegno lo fa chi chiama
+  function link(float $x, float $y, float $w, float $h, string $url): void {
+    $this->link[count($this->pagine)][] = sprintf('<< /Type /Annot /Subtype /Link /Rect [%.2F %.2F %.2F %.2F] /Border [0 0 0] /A << /S /URI /URI (%s) >> >>',
+      $x, self::A - $y - $h, $x + $w, self::A - $y, strtr($url, ['\\' => '\\\\', '(' => '\\(', ')' => '\\)']));
   }
   function logo(float $x, float $y, float $lato): void {
     $this->usati['logo'] = true;
@@ -139,9 +145,10 @@ class Pdf {
     $info = $n++;
     $ogg[$info] = '<< /Title (' . strtr(self::cp($titolo), ['(' => '\\(', ')' => '\\)', '\\' => '\\\\']) . ') /Producer (CAME Comunicazione) /CreationDate (D:' . date('YmdHis') . ') >>';
     $kids = [];
-    foreach ($this->pagine as $c) {
+    foreach ($this->pagine as $i => $c) {
       $z = gzcompress($c);
-      $ogg[$n] = sprintf('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 %.2F %.2F] /Resources << /Font << %s >>%s >> /Contents %d 0 R >>', self::L, self::A, implode(' ', $risorseFont), $xobj, $n + 1);
+      $annots = empty($this->link[$i]) ? '' : ' /Annots [' . implode(' ', $this->link[$i]) . ']';
+      $ogg[$n] = sprintf('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 %.2F %.2F] /Resources << /Font << %s >>%s >>%s /Contents %d 0 R >>', self::L, self::A, implode(' ', $risorseFont), $xobj, $annots, $n + 1);
       $ogg[$n + 1] = '<< /Length ' . strlen($z) . " /Filter /FlateDecode >>\nstream\n$z\nendstream";
       $kids[] = "$n 0 R"; $n += 2;
     }

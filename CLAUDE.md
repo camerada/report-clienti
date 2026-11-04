@@ -41,7 +41,7 @@ In locale: `php report.php --cliente=identia --prova --solo-pdf` con `prova/clau
   Accesso Visualizzatore all'account di servizio dato dall'utente e verificato il 23/10/2026 sul server (`--solo-dati` dall'11 al 22/10 riuscito);
   programma aggiornato sul server lo stesso giorno. Search Console non ancora attiva (il report la salta).
 - Report approvati dall'utente («report ok»).
-- 4/11/2026: niente più «prossimi passi» (sembravano lavori già decisi): il report finisce con «Cosa si potrebbe migliorare» (consigli come proposte, chiave `consigli`) e il riquadro «Vuoi metterli in pratica?» con email e `TELEFONO_CAME` da config.php. Contatti dal sito = «tocchi», non chiamate.
+- 4/11/2026: niente più «prossimi passi» (sembravano lavori già decisi): il report finisce con «Cosa si potrebbe migliorare» (consigli come proposte, chiave `consigli`) e il riquadro «Vuoi approfondire i consigli per metterli in pratica?» con pulsante WhatsApp cliccabile (messaggio precompilato con sito e periodo, `WHATSAPP_CAME` in config.php del server, link anche nell email al cliente) + email. Contatti dal sito = «tocchi», non chiamate.
 - Da fare quando l'utente lo chiede: file `lavori/` per gli altri clienti, referenti in copertina, passaggio ad `automatico`.
 
 ## Repo collegati

@@ -236,16 +236,26 @@ function crea_pdf(array $c, array $d, array $t, bool $esempio = false): string {
   $p->y -= 6;
   righe_etichettate($p, $t['consigli'] ?? $t['prossimi_passi'] ?? []);
 
-  $contatti = 'info@camecomunicazione.it' . (defined('TELEFONO_CAME') && TELEFONO_CAME !== '' ? '  ·  ' . TELEFONO_CAME : '');
-  $invito = 'Se uno di questi consigli ti interessa, scrivimi o chiamami: decidiamo insieme da dove partire, cosa serve e quanto costa.';
-  $h = 52 + Pdf::altezza($invito, W - 40, 'testo', 10, 1.5) + 22;
+  // Riquadro con il pulsante WhatsApp (messaggio già scritto, con sito e periodo del report)
+  $wa = whatsapp_url($c['sito'], $parziale ? $mese : "di $mese");
+  $invito = $wa ? 'Parlane con Maurizio di CAME Comunicazione: tocca il pulsante e scrivimi su WhatsApp, il messaggio è già pronto.'
+    : 'Parlane con Maurizio di CAME Comunicazione: scrivimi e vediamo insieme da dove partire.';
+  $contatti = ($wa ? 'oppure: ' . whatsapp_numero() . '  ·  ' : '') . 'info@camecomunicazione.it';
+  $h = 44 + Pdf::altezza($invito, W - 40, 'testo', 10, 1.5) + ($wa ? 50 : 0) + 34;
   $p->y += 22; $p->spazio($h);
   $y0 = $p->y;
   $p->rett(M, $y0, W, $h, PETROLIO, 8);
-  $p->testo(M + 20, $y0 + 28, 'Vuoi metterli in pratica?', 'grassetto', 12, LIME);
-  $p->y = $y0 + 40;
+  $p->testo(M + 20, $y0 + 28, 'Vuoi approfondire i consigli per metterli in pratica?', 'grassetto', 12, LIME);
+  $p->y = $y0 + 38;
   $p->paragrafo($invito, M + 20, W - 40, 'testo', 10, '#FFFFFF', 1.5);
-  $p->testo(M + 20, $p->y + 16, $contatti, 'mono', 9.5, '#FFFFFF');
+  if ($wa) {
+    $et = 'Scrivimi su WhatsApp'; $bw = Pdf::largo($et, 'grassetto', 11) + 44; $bh = 32; $by = $p->y + 10;
+    $p->rett(M + 20, $by, $bw, $bh, LIME, 16);
+    $p->testo(M + 20 + $bw / 2, $by + 20.5, $et, 'grassetto', 11, PETROLIO, 'c');
+    $p->link(M + 20, $by, $bw, $bh, $wa);
+    $p->y = $by + $bh + 8;
+  }
+  $p->testo(M + 20, $p->y + 16, $contatti, 'mono', 9, '#FFFFFF');
   $p->y = $y0 + $h;
 
   $p->y += 26; $p->spazio(80);
@@ -260,6 +270,17 @@ function crea_pdf(array $c, array $d, array $t, bool $esempio = false): string {
     . 'I dati delle ricerche vengono da Google Search Console.', M, W, 'testo', 7.5, TENUE, 1.45);
 
   return $p->salva("Report del sito {$c['sito']} - $mese");
+}
+
+// WhatsApp di Maurizio (WHATSAPP_CAME in config.php, solo cifre con prefisso, es. 39348…): link con messaggio già scritto
+function whatsapp_url(string $sito, string $quando): string {
+  if (!defined('WHATSAPP_CAME') || WHATSAPP_CAME === '') return '';
+  return 'https://wa.me/' . preg_replace('/\D/', '', WHATSAPP_CAME) . '?text='
+    . rawurlencode("Ciao Maurizio, ho letto il report $quando di $sito e vorrei approfondire i consigli.");
+}
+function whatsapp_numero(): string {
+  $n = preg_replace('/\D/', '', WHATSAPP_CAME);
+  return str_starts_with($n, '39') ? trim('+39 ' . substr($n, 2, 3) . ' ' . substr($n, 5, 3) . ' ' . substr($n, 8)) : "+$n";
 }
 
 function data_italiana(DateTimeImmutable $d): string {

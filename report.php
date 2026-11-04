@@ -97,9 +97,11 @@ if ($falliti && !isset($opz['prova'])) {
 exit($errori ? 1 : 0);
 
 function email_cliente(array $c, array $t, string $mese): string {
+  $wa = whatsapp_url($c['sito'], str_starts_with($mese, 'dal ') ? $mese : "di $mese");
   return '<p>Buongiorno,</p><p>in allegato il report del tuo sito <b>' . htmlspecialchars($c['sito']) . "</b> per $mese.</p>"
     . '<p>' . htmlspecialchars($t['in_breve']) . '</p>'
-    . '<p>Per qualsiasi domanda rispondi pure a questa email.</p><p>CAME Comunicazione</p>';
+    . ($wa ? '<p>In fondo al report trovi qualche consiglio. Vuoi approfondirlo? <a href="' . htmlspecialchars($wa) . '">Scrivimi su WhatsApp</a>, il messaggio è già pronto.</p>' : '')
+    . '<p>Per qualsiasi domanda rispondi pure a questa email.</p><p>Maurizio Camerada<br>CAME Comunicazione</p>';
 }
 function email_anteprima(array $c, array $t, string $mese): string {
   return '<p>Report di <b>' . htmlspecialchars($c['nome']) . "</b> per $mese, da controllare.</p>"
