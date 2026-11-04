@@ -17,16 +17,16 @@ const SCHEMA_TESTI = [
         'titolo' => ['type' => 'string', 'description' => 'Frase breve, max 8 parole'],
         'testo'  => ['type' => 'string', 'description' => '2-3 frasi con i numeri e cosa significano per l\'attività'],
       ], 'required' => ['titolo', 'testo'], 'additionalProperties' => false]],
-    'prossimi_passi'  => ['type' => 'array', 'description' => 'Da 2 a 3 azioni concrete per il mese prossimo',
+    'consigli'        => ['type' => 'array', 'description' => 'Da 2 a 3 cose che si potrebbero fare per migliorare i risultati, scritte come proposte da valutare (mai come lavori già decisi)',
       'items' => ['type' => 'object', 'properties' => [
         'etichetta' => ['type' => 'string', 'description' => 'Max 3 parole, es. "Scheda Google"'],
-        'testo'     => ['type' => 'string', 'description' => '1-2 frasi'],
+        'testo'     => ['type' => 'string', 'description' => '1-2 frasi: cosa si potrebbe fare e perché, partendo da un dato del report'],
       ], 'required' => ['etichetta', 'testo'], 'additionalProperties' => false]],
     'nota_provenienza'=> ['type' => 'string', 'description' => '1-2 frasi su da dove arrivano le visite'],
     'nota_pagine'     => ['type' => 'string', 'description' => '1-2 frasi sulle pagine più lette'],
     'nota_google'     => ['type' => 'string', 'description' => '1-2 frasi sulle ricerche su Google; stringa vuota se non ci sono dati'],
   ],
-  'required' => ['in_breve', 'kpi', 'nota_grafico', 'scoperte', 'prossimi_passi', 'nota_provenienza', 'nota_pagine', 'nota_google'],
+  'required' => ['in_breve', 'kpi', 'nota_grafico', 'scoperte', 'consigli', 'nota_provenienza', 'nota_pagine', 'nota_google'],
   'additionalProperties' => false,
 ];
 
@@ -48,7 +48,9 @@ Regole:
   Scrivi "il numero di telefono è stato toccato 20 volte", "16 tocchi sul pulsante WhatsApp", non "ti hanno chiamato 20 volte" né "20 persone ti hanno scritto".
 - Analytics conta solo i visitatori che accettano i cookie: i numeri veri sono più alti. Ricordalo al massimo una volta, se serve.
 - Se ti do il lavoro fatto dall'agenzia nel mese, collegalo ai dati quando c'è un legame vero; non ripeterlo per intero.
-- Se ti do i prossimi passi già decisi dall'agenzia, includili per primi nei prossimi_passi con parole tue, poi aggiungi i tuoi se c'è posto.
+- Il report racconta i risultati. I consigli sono proposte che il titolare può valutare e poi decidere con l'agenzia:
+  scrivi "si potrebbe", "potresti", "conviene", mai "faremo", "aggiungiamo", "sistemiamo" o altro che faccia sembrare il lavoro già deciso o già in corso.
+- Se ti do delle proposte dell'agenzia, mettile per prime nei consigli con parole tue (sempre come proposte), poi aggiungi le tue se c'è posto.
 - I consigli devono essere cose concrete che l'attività o l'agenzia possono fare (es. un articolo su un tema cercato, aggiornare la scheda Google, chiedere recensioni).
 - Niente emoji, niente punti esclamativi, niente toni da venditore.
 TXT;
@@ -57,10 +59,10 @@ TXT;
     . (!empty($per['parziale'])
       ? "Periodo del report: $mese (solo questi giorni, non il mese intero). Nei numeri «questo_mese» è questo periodo e «mese_prima» sono "
         . "gli stessi giorni del mese prima ({$per['etichetta_prima']}); il grafico confronta gli stessi giorni negli ultimi 3 mesi. "
-        . "Parla di «questi giorni» o «questo periodo», non di «questo mese»; i prossimi passi sono per le prossime settimane.\n"
+        . "Parla di «questi giorni» o «questo periodo», non di «questo mese»; i consigli sono per le prossime settimane.\n"
       : "Mese del report: $mese\n")
     . (!empty($d['lavori']['fatto']) ? "\nLavoro fatto da CAME nel mese:\n" . implode("\n", array_map(fn($l) => "- {$l['etichetta']}: {$l['testo']}", $d['lavori']['fatto'])) . "\n" : '')
-    . (!empty($d['lavori']['prossimi']) ? "\nProssimi passi già decisi:\n" . implode("\n", array_map(fn($l) => "- {$l['etichetta']}: {$l['testo']}", $d['lavori']['prossimi'])) . "\n" : '')
+    . (!empty($d['lavori']['prossimi']) ? "\nProposte dell'agenzia per il cliente:\n" . implode("\n", array_map(fn($l) => "- {$l['etichetta']}: {$l['testo']}", $d['lavori']['prossimi'])) . "\n" : '')
     . "\nNumeri (JSON):\n" . json_encode(($d['tipo'] ?? '') === 'imbuto' ? dati_imbuto_per_claude($d) : dati_per_claude($c, $d), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
   $corpo = [

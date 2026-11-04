@@ -1,7 +1,7 @@
 <?php
 // Impaginazione del report nello stile dei resoconti CAME (es. Veleco, ottobre 2026):
 // copertina petrolio, «In breve» con 3 numeri e grafico dei 3 mesi, lavoro fatto,
-// «Cosa ci dicono i dati» numerato, i numeri del mese, prossimi passi e firma.
+// «Cosa ci dicono i dati» numerato, i numeri del mese, consigli con invito a contattare CAME e firma.
 
 const PETROLIO = '#00596D', CIANO = '#0092A9', LIME = '#A4D233';
 const INCHIOSTRO = '#1E2A2E', SECONDARIO = '#4F5D62', TENUE = '#8A979B', FONDO = '#EEF1EF', FONDO2 = '#F7F9F7', LINEA = '#DCE2E0';
@@ -214,7 +214,7 @@ function crea_pdf(array $c, array $d, array $t, bool $esempio = false): string {
     }
   }
 
-  // ── Cosa ci serve da te / prossimi passi / firma
+  // ── Cosa ci serve da te / consigli / invito a sentirsi / firma
   $serve = $d['lavori']['ci_serve'] ?? [];
   $p->nuovaPagina();
   if ($serve) {
@@ -231,9 +231,22 @@ function crea_pdf(array $c, array $d, array $t, bool $esempio = false): string {
     }
     $p->y = $y0 + $h + 30;
   }
-  titolo_sezione($p, 'I prossimi passi');
-  $p->y -= 10;
-  righe_etichettate($p, $t['prossimi_passi']);
+  // Consigli: idee da valutare, non lavori già decisi. Si decide insieme sentendo CAME.
+  titolo_sezione($p, 'Cosa si potrebbe migliorare', 'Sono idee nate dai numeri di questo report, da valutare insieme: non partono senza il tuo ok.');
+  $p->y -= 6;
+  righe_etichettate($p, $t['consigli'] ?? $t['prossimi_passi'] ?? []);
+
+  $contatti = 'info@camecomunicazione.it' . (defined('TELEFONO_CAME') && TELEFONO_CAME !== '' ? '  ·  ' . TELEFONO_CAME : '');
+  $invito = 'Se uno di questi consigli ti interessa, scrivimi o chiamami: decidiamo insieme da dove partire, cosa serve e quanto costa.';
+  $h = 52 + Pdf::altezza($invito, W - 40, 'testo', 10, 1.5) + 22;
+  $p->y += 22; $p->spazio($h);
+  $y0 = $p->y;
+  $p->rett(M, $y0, W, $h, PETROLIO, 8);
+  $p->testo(M + 20, $y0 + 28, 'Vuoi metterli in pratica?', 'grassetto', 12, LIME);
+  $p->y = $y0 + 40;
+  $p->paragrafo($invito, M + 20, W - 40, 'testo', 10, '#FFFFFF', 1.5);
+  $p->testo(M + 20, $p->y + 16, $contatti, 'mono', 9.5, '#FFFFFF');
+  $p->y = $y0 + $h;
 
   $p->y += 26; $p->spazio(80);
   $p->cerchio(M + 30, $p->y + 30, 30, '#FFFFFF');

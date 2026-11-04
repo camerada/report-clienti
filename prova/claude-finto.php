@@ -16,7 +16,7 @@ $testi = [
     ['titolo' => 'Il blog comincia a portare persone', 'testo' => 'L\'articolo sulle gengive che sanguinano è la quinta pagina più letta e compare 880 volte su Google. Gli articoli intercettano chi ha un problema e non conosce ancora lo studio.'],
     ['titolo' => 'Sette persone su dieci usano il telefono', 'testo' => 'La maggior parte delle visite arriva da smartphone. Il numero e il pulsante WhatsApp sono già in alto su ogni pagina: è la scelta giusta.'],
   ],
-  'prossimi_passi' => [['etichetta' => 'Allineatori', 'testo' => 'Un articolo con le domande più comuni sugli allineatori trasparenti: il sito è già vicino alla prima pagina per questa ricerca.'], ['etichetta' => 'Scheda Google', 'testo' => 'Chiedere una recensione ai pazienti soddisfatti, poche alla volta.']],
+  'consigli' => [['etichetta' => 'Allineatori', 'testo' => 'Un articolo con le domande più comuni sugli allineatori trasparenti: il sito è già vicino alla prima pagina per questa ricerca.'], ['etichetta' => 'Scheda Google', 'testo' => 'Chiedere una recensione ai pazienti soddisfatti, poche alla volta.']],
   'nota_provenienza' => 'Una visita su due arriva da Google. Le 41 da Google Maps sono persone che hanno trovato la scheda dello studio e poi aperto il sito.',
   'nota_pagine' => 'Dopo la pagina iniziale, la più letta è quella dei contatti: chi arriva cerca soprattutto come raggiungerti.',
   'nota_google' => 'Su Google il sito compare sempre di più: 6.120 volte, erano 4.870.',

@@ -1,7 +1,8 @@
 # Lavoro fatto, mese per mese (facoltativo)
 
 Un file per cliente e mese: `lavori/<cliente>/<AAAA-MM>.md` (es. `lavori/identia/2026-10.md`).
-Se c'è, il report aggiunge «Cosa abbiamo fatto», «Cosa ci serve da te» e usa i prossimi passi già decisi.
+Se c'è, il report aggiunge «Cosa abbiamo fatto», «Cosa ci serve da te» e mette per prime tra i consigli le nostre proposte.
+I consigli nel report sono sempre proposte da decidere insieme al cliente, mai lavori già decisi.
 Se non c'è, il report esce lo stesso con i soli dati.
 
 ```
@@ -12,6 +13,6 @@ Etichetta breve: una o due frasi su cosa abbiamo fatto.
 Una domanda o richiesta per riga.
 
 ## Prossimi passi
-Etichetta breve: cosa faremo.
+Etichetta breve: cosa proponiamo (nel report diventa un consiglio, «si potrebbe…»).
 ```
 Dopo averlo scritto: `sh carica.sh` (carica anche la cartella lavori/).
