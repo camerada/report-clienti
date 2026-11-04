@@ -214,23 +214,9 @@ function crea_pdf(array $c, array $d, array $t, bool $esempio = false): string {
     }
   }
 
-  // ── Cosa ci serve da te / consigli / invito a sentirsi / firma
-  $serve = $d['lavori']['ci_serve'] ?? [];
+  // ── Consigli / invito a sentirsi / firma
+  // (le richieste al cliente, «Ci serve da te» nei file lavori/, non vanno nel report: si fanno a parte)
   $p->nuovaPagina();
-  if ($serve) {
-    $h = 46 + array_sum(array_map(fn($s) => Pdf::altezza($s, W - 64, 'testo', 10) + 8, $serve));
-    titolo_sezione($p, 'Cosa ci serve da te', 'Bastano poche righe, anche su WhatsApp.');
-    $y0 = $p->y;
-    $p->rett(M, $y0, W, $h, PETROLIO, 8);
-    $p->testo(M + 20, $y0 + 26, 'Per completare il lavoro', 'grassetto', 11.5, LIME);
-    $p->y = $y0 + 38;
-    foreach ($serve as $i => $s) {
-      $p->testo(M + 20, $p->y + 11, ($i + 1) . '.', 'grassetto', 10, '#FFFFFF');
-      $p->paragrafo($s, M + 40, W - 64, 'testo', 10, '#FFFFFF', 1.5);
-      $p->y += 8;
-    }
-    $p->y = $y0 + $h + 30;
-  }
   // Consigli: idee da valutare, non lavori già decisi. Si decide insieme sentendo CAME.
   titolo_sezione($p, 'Cosa si potrebbe migliorare', 'Sono idee nate dai numeri di questo report, da valutare insieme: non partono senza il tuo ok.');
   $p->y -= 6;

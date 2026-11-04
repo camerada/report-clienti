@@ -50,7 +50,6 @@ Regole:
 - Se ti do il lavoro fatto dall'agenzia nel mese, collegalo ai dati quando c'è un legame vero; non ripeterlo per intero.
 - Il report racconta i risultati. I consigli sono proposte che il titolare può valutare e poi decidere con l'agenzia:
   scrivi "si potrebbe", "potresti", "conviene", mai "faremo", "aggiungiamo", "sistemiamo" o altro che faccia sembrare il lavoro già deciso o già in corso.
-- Se ti do delle proposte dell'agenzia, mettile per prime nei consigli con parole tue (sempre come proposte), poi aggiungi le tue se c'è posto.
 - I consigli devono essere cose concrete che l'attività o l'agenzia possono fare (es. un articolo su un tema cercato, aggiornare la scheda Google, chiedere recensioni).
 - Niente emoji, niente punti esclamativi, niente toni da venditore.
 TXT;
@@ -62,7 +61,6 @@ TXT;
         . "Parla di «questi giorni» o «questo periodo», non di «questo mese»; i consigli sono per le prossime settimane.\n"
       : "Mese del report: $mese\n")
     . (!empty($d['lavori']['fatto']) ? "\nLavoro fatto da CAME nel mese:\n" . implode("\n", array_map(fn($l) => "- {$l['etichetta']}: {$l['testo']}", $d['lavori']['fatto'])) . "\n" : '')
-    . (!empty($d['lavori']['prossimi']) ? "\nProposte dell'agenzia per il cliente:\n" . implode("\n", array_map(fn($l) => "- {$l['etichetta']}: {$l['testo']}", $d['lavori']['prossimi'])) . "\n" : '')
     . "\nNumeri (JSON):\n" . json_encode(($d['tipo'] ?? '') === 'imbuto' ? dati_imbuto_per_claude($d) : dati_per_claude($c, $d), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
   $corpo = [
