@@ -44,6 +44,8 @@ Regole:
 - Confronta con il mese prima solo quando il dato del mese prima c'è e non è zero.
 - Sii onesto: se un numero è basso o in calo, dillo con calma e spiega cosa si può fare.
 - Numeri piccoli (sotto 30) non sono una tendenza: non trarre conclusioni forti.
+- I contatti dal sito (telefono, WhatsApp, email) sono tocchi sui pulsanti, non telefonate o messaggi avvenuti: il sito non sa se poi la persona ha chiamato o scritto davvero.
+  Scrivi "il numero di telefono è stato toccato 20 volte", "16 tocchi sul pulsante WhatsApp", non "ti hanno chiamato 20 volte" né "20 persone ti hanno scritto".
 - Analytics conta solo i visitatori che accettano i cookie: i numeri veri sono più alti. Ricordalo al massimo una volta, se serve.
 - Se ti do il lavoro fatto dall'agenzia nel mese, collegalo ai dati quando c'è un legame vero; non ripeterlo per intero.
 - Se ti do i prossimi passi già decisi dall'agenzia, includili per primi nei prossimi_passi con parole tue, poi aggiungi i tuoi se c'è posto.
