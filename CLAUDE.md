@@ -42,6 +42,11 @@ In locale: `php report.php --cliente=identia --prova --solo-pdf` con `prova/clau
   programma aggiornato sul server lo stesso giorno. Search Console non ancora attiva (il report la salta).
 - Report approvati dall'utente («report ok»).
 - 4/11/2026: niente più «prossimi passi» (sembravano lavori già decisi): il report finisce con «Cosa si potrebbe migliorare» (consigli come proposte, chiave `consigli`) e il riquadro «Vuoi approfondire i consigli per metterli in pratica?» con pulsante WhatsApp cliccabile (messaggio precompilato con sito e periodo, `WHATSAPP_CAME` in config.php del server, link anche nell email al cliente) + email. Contatti dal sito = «tocchi», non chiamate. Nel report niente «Cosa ci serve da te» né i «Prossimi passi» dei file lavori/ (promemoria interni): dai file lavori/ entra solo «Fatto».
+- 4/11/2026: pulsante «Invia al cliente» nelle anteprime. `email` in clienti.php per identia, be-first, mvrantincendio, motoracer, ferramentagenova
+  (alessio@), marcofirinu, veleco, postavecchia, supzena (info@dominio); i siti nostri (came, mauriziocamerada, edoardocamerada, tuosito, recruiting)
+  senza email = solo anteprima. Il pulsante apre `camecomunicazione.it/report/invia.php` (stub `web/invia.php`, copiato da carica.sh) → `invia.php`:
+  GET = pagina di conferma, POST = invia con CAME in copia e scrive «inviato» nel registro (una volta sola). Link firmato HMAC (`SEGRETO_INVIO` in
+  config.php, se manca deriva da BREVO_API_KEY). Dal report di dicembre (o gennaio) si passa ad `automatico => true`.
 - Da fare quando l'utente lo chiede: file `lavori/` per gli altri clienti, referenti in copertina, passaggio ad `automatico`.
 
 ## Repo collegati

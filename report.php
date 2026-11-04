@@ -10,8 +10,8 @@
  *   php report.php --cliente=identia --solo-dati     salva solo i numeri in uscite/<cliente>/<periodo>-dati.json (niente Claude, niente email)
  *   php report.php --cliente=identia --prova         dati finti da prova/esempio.json (niente Google)
  *
- * Ogni cliente ha 'automatico' in clienti.php: false = il PDF arriva solo a CAME (da controllare e
- * inoltrare), true = va al cliente con CAME in copia. Un report già inviato non riparte due volte
+ * Ogni cliente ha 'automatico' in clienti.php: false = il PDF arriva solo a CAME da controllare, con il pulsante
+ * «Invia al cliente» se il cliente ha un'email (invia.php); true = va al cliente con CAME in copia. Un report già inviato non riparte due volte
  * (registro in uscite/registro.csv), a meno di --forza.
  */
 if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
@@ -69,10 +69,10 @@ foreach ($quali as $id) {
     $meseIt = $d['periodo']['etichetta'];
     $alCliente = !empty($c['automatico']) && !empty($c['email']) && !isset($opz['prova']);
     if ($alCliente) {
-      invia_email($c['email'], "Il tuo sito, $meseIt: il report", email_cliente($c, $t, $meseIt), $pdf, $nome, [EMAIL_CAME]);
+      invia_email($c['email'], oggetto_cliente($meseIt), email_cliente($c, $t, $meseIt), $pdf, $nome, [EMAIL_CAME]);
       $esito = 'inviato';
     } else {
-      invia_email([EMAIL_CAME], "Da controllare: report di {$c['sito']} - $meseIt", email_anteprima($c, $t, $meseIt), $pdf, $nome);
+      invia_email([EMAIL_CAME], (empty($c['email']) ? "Report di {$c['sito']} - $meseIt" : "Da inviare: report di {$c['sito']} - $meseIt"), email_anteprima($c, $t, $meseIt, $id, $chiave), $pdf, $nome);
       $esito = 'anteprima';
     }
     file_put_contents($registro, "$id;$chiave;" . date('c') . ";$esito\n", FILE_APPEND);
@@ -95,16 +95,3 @@ if ($falliti && !isset($opz['prova'])) {
   } catch (Throwable $e) { echo "Email di avviso non partita: " . $e->getMessage() . "\n"; }
 }
 exit($errori ? 1 : 0);
-
-function email_cliente(array $c, array $t, string $mese): string {
-  $wa = whatsapp_url($c['sito'], str_starts_with($mese, 'dal ') ? $mese : "di $mese");
-  return '<p>Buongiorno,</p><p>in allegato il report del tuo sito <b>' . htmlspecialchars($c['sito']) . "</b> per $mese.</p>"
-    . '<p>' . htmlspecialchars($t['in_breve']) . '</p>'
-    . ($wa ? '<p>In fondo al report trovi qualche consiglio. Vuoi approfondirlo? <a href="' . htmlspecialchars($wa) . '">Scrivimi su WhatsApp</a>, il messaggio è già pronto.</p>' : '')
-    . '<p>Per qualsiasi domanda rispondi pure a questa email.</p><p>Maurizio Camerada<br>CAME Comunicazione</p>';
-}
-function email_anteprima(array $c, array $t, string $mese): string {
-  return '<p>Report di <b>' . htmlspecialchars($c['nome']) . "</b> per $mese, da controllare.</p>"
-    . '<p>' . htmlspecialchars($t['in_breve']) . '</p>'
-    . '<p>Se va bene, inoltralo al cliente. Quando i report sono sempre a posto, metti <code>automatico =&gt; true</code> e l\'email del cliente in clienti.php: dal mese dopo partono da soli.</p>';
-}

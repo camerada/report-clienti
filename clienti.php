@@ -4,7 +4,7 @@
  *
  * ga4            ID numerico della proprietà Analytics (Amministrazione → Dettagli proprietà). Vuoto = saltato.
  * search_console vuoto = prova da solo 'sc-domain:sito', poi https://www.sito/ e https://sito/
- * email          a chi va il report quando 'automatico' è true
+ * email          il cliente. Con 'automatico' false l'anteprima a CAME ha il pulsante «Invia al cliente»; senza email (siti nostri) solo anteprima
  * automatico     false = arriva solo a CAME (EMAIL_CAME), da controllare; true = al cliente con CAME in copia
  * referente      nome sulla copertina («Preparato per …»), facoltativo
  * contatti       eventi di Analytics che contano come contatto => nome nel report
@@ -26,7 +26,7 @@ const PREDEFINITI = [
 
 return [
   'identia' => [
-    'nome' => 'Identia — Studio Odontoiatrico D\'Urso', 'sito' => 'identia.it', 'ga4' => '549671189',
+    'nome' => 'Identia — Studio Odontoiatrico D\'Urso', 'sito' => 'identia.it', 'email' => ['info@identia.it'], 'ga4' => '549671189',
     'referente' => 'Dott. Maurizio D\'Urso',
     'settore' => 'studio dentistico a Genova (Piazza Cavour), un solo professionista',
     'nota_contatti' => 'chiamate e messaggi',
@@ -35,17 +35,17 @@ return [
     'note' => 'Analytics attivo dal 10/10/2026 e conta solo chi accetta i cookie. Blog con articoli programmati ogni settimana. '
             . 'Comunicazione sanitaria: niente promesse di risultati, niente prezzi.',
   ],
-  'be-first'          => ['nome' => 'BE-FIRST', 'sito' => 'be-first.it', 'ga4' => '552898861'],
+  'be-first'          => ['nome' => 'BE-FIRST', 'sito' => 'be-first.it', 'email' => ['info@be-first.it'], 'ga4' => '552898861'],
   'came'              => ['nome' => 'CAME Comunicazione', 'sito' => 'camecomunicazione.it', 'ga4' => '520232629',
                           'settore' => 'agenzia di comunicazione e siti web a Genova (sito proprio di CAME)'],
   'mauriziocamerada'  => ['nome' => 'Maurizio Camerada', 'sito' => 'mauriziocamerada.it', 'ga4' => '332423611', 'settore' => 'sito personale'],
-  'mvrantincendio'    => ['nome' => 'MVR Antincendio', 'sito' => 'mvrantincendio.it', 'ga4' => '344604720',
+  'mvrantincendio'    => ['nome' => 'MVR Antincendio', 'sito' => 'mvrantincendio.it', 'email' => ['info@mvrantincendio.it'], 'ga4' => '344604720',
                           'settore' => 'antincendio e corsi sulla sicurezza'],
   'edoardocamerada'   => ['nome' => 'Edoardo Camerada', 'sito' => 'edoardocamerada.it', 'ga4' => '480692589', 'settore' => 'sito personale'],
-  'motoracer'         => ['nome' => 'Moto Racer Genova', 'sito' => 'motoracergenova.it', 'ga4' => '364318665', 'settore' => 'moto a Genova'],
-  'ferramentagenova'  => ['nome' => 'Paradiso della Brugola', 'sito' => 'ferramentagenova.it', 'ga4' => '461834714', 'settore' => 'ferramenta a Genova'],
-  'marcofirinu'       => ['nome' => 'Marco Firinu', 'sito' => 'marcofirinu.it', 'ga4' => '480296162'],
-  'veleco'            => ['nome' => 'Concessionario Veleco Italia', 'referente' => 'Valentina Colomba', 'sito' => 'concessionariovelecoitalia.it', 'ga4' => '546703442', 'settore' => 'concessionario di veicoli elettrici Veleco',
+  'motoracer'         => ['nome' => 'Moto Racer Genova', 'sito' => 'motoracergenova.it', 'email' => ['info@motoracergenova.it'], 'ga4' => '364318665', 'settore' => 'moto a Genova'],
+  'ferramentagenova'  => ['nome' => 'Paradiso della Brugola', 'sito' => 'ferramentagenova.it', 'email' => ['alessio@ferramentagenova.it'], 'ga4' => '461834714', 'settore' => 'ferramenta a Genova'],
+  'marcofirinu'       => ['nome' => 'Marco Firinu', 'sito' => 'marcofirinu.it', 'email' => ['info@marcofirinu.it'], 'ga4' => '480296162'],
+  'veleco'            => ['nome' => 'Concessionario Veleco Italia', 'referente' => 'Valentina Colomba', 'sito' => 'concessionariovelecoitalia.it', 'email' => ['info@concessionariovelecoitalia.it'], 'ga4' => '546703442', 'settore' => 'concessionario di veicoli elettrici Veleco',
                           'nota_contatti' => 'chiamate e messaggi',
                           'contatti' => ['click_call' => 'Telefonate dal sito', 'click_whatsapp' => 'Messaggi WhatsApp', 'click_email' => 'Email', 'form_start' => 'Moduli iniziati'],
                           'altri_eventi' => ['click_outbound' => 'Clic verso altri siti', 'play_video' => 'Video guardati']],
@@ -55,7 +55,7 @@ return [
                           'contatti' => ['anteprima_creata' => 'Anteprime create', 'pagamento_completato' => 'Pagamenti'],
                           'altri_eventi' => ['clic_crea_sito' => 'Clic su «Crea il tuo sito»', 'form_iniziato' => 'Moduli iniziati', 'codice_chiesto' => 'Codici email chiesti', 'attivazione_aperta' => 'Pagine di attivazione aperte'],
                           'nota_contatti' => 'anteprime create'],
-  'postavecchia'      => ['nome' => 'Posta Vecchia Cocktail Bar & Tequileria', 'sito' => 'cocktailbarpostavecchia.it', 'ga4' => '491108573', // stream G-RLLZ2T2340
+  'postavecchia'      => ['nome' => 'Posta Vecchia Cocktail Bar & Tequileria', 'sito' => 'cocktailbarpostavecchia.it', 'email' => ['info@cocktailbarpostavecchia.it'], 'ga4' => '491108573', // stream G-RLLZ2T2340
                           'settore' => 'cocktail bar e tequileria nel centro storico di Genova (Piazza della Posta Vecchia): cocktail special, tequila e mezcal, '
                                      . 'Mexican aperitivo, cucina messicana, DJ set e Lotteria della Tequila il sabato; aperto la sera, chiuso il martedì',
                           'nota_contatti' => 'messaggi e chiamate',
@@ -65,7 +65,7 @@ return [
                                   . 'Analytics conta solo chi accetta i cookie. Le prenotazioni arrivano su WhatsApp, non per email. '
                                   . 'clic_whatsapp comprende anche il clic sul pulsante del modulo di prenotazione. Pubblico anche turistico (versione inglese). '
                                   . 'Scheda Google con 4,8 stelle su 90 recensioni.'],
-  'supzena'           => ['nome' => 'SUP Zena', 'sito' => 'supzena.it', 'ga4' => '343925367', 'settore' => 'corsi di stand up paddle (SUP) a Genova'],
+  'supzena'           => ['nome' => 'SUP Zena', 'sito' => 'supzena.it', 'email' => ['info@supzena.it'], 'ga4' => '343925367', 'settore' => 'corsi di stand up paddle (SUP) a Genova'],
   // Percorso di selezione agenti Dojo: landing recruitingagenti → test dojotalentcheck.
   // Niente Analytics: legge il contatore senza cookie e i test dal database del test (solo totali).
   'recruiting'        => ['nome' => 'Selezione agenti Dojo', 'sito' => 'recruitingagenti.camecomunicazione.it',
