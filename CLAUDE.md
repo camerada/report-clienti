@@ -22,10 +22,12 @@ Lavoro fatto nel mese (facoltativo): `lavori/<cliente>/<AAAA-MM>.md` (formato in
 Hostinger, alias SSH `identia` (utente u745278502), cartella `~/report-clienti` fuori dai siti.
 `config.php` e `chiave-google.json` solo sul server (chiavi Claude e Brevo copiate da vetrina.si da `installa.sh`).
 Cron in hPanel (uno solo): `12 8 4 * * /usr/bin/php /home/u745278502/report-clienti/report.php --tutti`.
-Aggiornamento del server (dal 4/11/2026): da solo da GitHub. Cron Hostinger ogni 10 minuti `sh $HOME/report-clienti/aggiorna.sh`
+Aggiornamento del server (dal 4/11/2026): da solo da GitHub. Cron Hostinger ogni 10 minuti `sh /home/u745278502/report-clienti/aggiorna.sh`
 (git fetch con la chiave Git dell'account, deploy key «Server Hostinger» in sola lettura sul repo; poi `dopo-aggiornamento.sh`: copia
 web/invia.php in camecomunicazione.it/report/ e controlla la sintassi). Basta fare push su main. Il cron si gestisce con lo strumento Hostinger
-(hosting_cron-jobs_*), output con hosting_cron-jobs_output. `carica.sh` dal Mac resta come alternativa.
+(hosting_cron-jobs_*), output con hosting_cron-jobs_output. Nei comandi dei cron Hostinger: percorsi interi (/home/u745278502/…), MAI `$HOME`
+(non viene espanso: il 4/11 un `cd $HOME/report-clienti` fallito ha fatto finire un git checkout nella home, poi ripulita) e mai `%`
+(in crontab è un a capo); massimo 255 caratteri; l'output salvato è solo la parte finale. `carica.sh` dal Mac resta come alternativa.
 Prova: `ssh identia "cd report-clienti && php report.php --cliente=<id> --mese=AAAA-MM"`.
 Parte di un mese: `--dal=AAAA-MM-GG --al=AAAA-MM-GG` (stesso mese; confronto con gli stessi giorni del mese prima, file `<cliente>/<dal>_<al>`).
 Analisi approfondita di un cliente: `esporta.php --cliente=<id> [--dal=AAAA-MM-GG]` scrive su stdout un JSON grezzo (Analytics da 12 mesi: canali per mese, fonti, pagine di arrivo, eventi, contatti per giorno/pagina/fonte/città, città, dispositivi, età; Search Console 16 mesi: mesi, ricerche, pagine, ricerca+pagina, paesi, dispositivi), copia in `uscite/<id>/analisi-<data>.json`. Dal Mac: `ssh identia "cd report-clienti && php esporta.php --cliente=veleco" > ~/Desktop/veleco-dati.json`, poi il file si manda a Claude Code.

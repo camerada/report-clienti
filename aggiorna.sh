@@ -1,5 +1,5 @@
 #!/bin/sh
-# Scarica da GitHub l'ultima versione del programma (cron di Hostinger ogni 10 minuti: sh $HOME/report-clienti/aggiorna.sh).
+# Scarica da GitHub l'ultima versione del programma (cron di Hostinger ogni 10 minuti: sh /home/u745278502/report-clienti/aggiorna.sh).
 # Il server legge il repo con la sua chiave Git (deploy key «Server Hostinger», sola lettura).
 # config.php, chiave-google.json e uscite/ non sono su GitHub: restano come sono.
 cd "$HOME/report-clienti" || exit 1
