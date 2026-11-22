@@ -4,3 +4,6 @@ uscite/
 .DS_Store
 strumenti.conf
 prova/*.png
+
+# Claude: archivio locale delle chat prima della compattazione
+.claude/handoff/

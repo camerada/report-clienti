@@ -1,0 +1,2 @@
+# Impedisce di aprire dal web i file di lavoro di Claude (se il repo viene pubblicato su un hosting Apache/LiteSpeed)
+Require all denied
